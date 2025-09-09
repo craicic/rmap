@@ -8,7 +8,10 @@ onMounted(() => {
   viewer = OpenSeadragon({
     id: 'open-seadragon',
     prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/images/',
-    tileSources: '/map.png',
+    tileSources: {
+     type: 'image',
+      url: '/map.png'
+    }
   });
 });
 
