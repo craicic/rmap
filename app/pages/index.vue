@@ -2,17 +2,15 @@
 definePageMeta({
   middleware: ['authenticated'],
 })
-const { user, clear: clearSession} = useUserSession()
+const { user } = useUserSession()
 
-async function logout() {
-  await clearSession()
-  await navigateTo('/login')
-}
 </script>
 
 <template>
   <div>
+    <logoutHeader />
     <h1 v-if="user">Welcome {{ user.name }}</h1>
-    <button @click="logout">Logout</button>
+    <div><NuxtLink to="/map">Map</NuxtLink></div>
+    <hr>
   </div>
 </template>

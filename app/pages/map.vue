@@ -4,6 +4,9 @@ definePageMeta({
 })
 </script>
 <template>
-  <mapViewer/>
+  <div>
+    <logoutHeader />
+    <mapViewer/>
+  </div>
 </template>
 
