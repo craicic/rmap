@@ -2,7 +2,7 @@
 definePageMeta({
   middleware: ['authenticated'],
 })
-const {user, clear: clearSession} = useUserSession()
+const { user, clear: clearSession} = useUserSession()
 
 async function logout() {
   await clearSession()
@@ -12,7 +12,7 @@ async function logout() {
 
 <template>
   <div>
-    <h1>Welcome {{ user.name }}</h1>
+    <h1 v-if="user">Welcome {{ user.name }}</h1>
     <button @click="logout">Logout</button>
   </div>
 </template>
