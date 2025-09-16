@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 
-const {loggedIn, user, fetch: refreshSession} = useUserSession()
+const {fetch: refreshSession} = useUserSession()
 const credentials = reactive({
   email: '',
   password: '',
@@ -25,10 +25,9 @@ async function login() {
 </script>
 
 <template>
-
   <form @submit.prevent="login">
-    <input v-model="credentials.email" type="email" placeholder="Email"/>
-    <input v-model="credentials.password" type="password" placeholder="Password"/>
+    <input v-model="credentials.email" type="email" placeholder="Email">
+    <input v-model="credentials.password" type="password" placeholder="Password">
     <button type="submit">Login</button>
     <div v-if="error">{{ error }}</div>
   </form>
