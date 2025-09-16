@@ -2,15 +2,17 @@
 definePageMeta({
   middleware: ['authenticated'],
 })
-const { user } = useUserSession()
+const {user} = useUserSession()
 
 </script>
 
 <template>
   <div>
-    <logoutHeader />
+    <logoutHeader/>
     <h1 v-if="user">Welcome {{ user.name }}</h1>
-    <div><NuxtLink to="/map">Map</NuxtLink></div>
+    <div>
+      <NuxtLink to="/map">Map</NuxtLink>
+    </div>
     <hr>
   </div>
 </template>
