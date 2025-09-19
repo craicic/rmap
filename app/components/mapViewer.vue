@@ -56,7 +56,7 @@ onMounted(async () => {
   mapInstance.setMaxZoom(maxZoom.value)
   mapInstance.setView(rc.unproject([imageSize, imageSize]), 2)
 
-  L.tileLayer(`/map/{z}/{x}/{y}.png`, {
+  L.tileLayer(`/map/{z}/{x}/{y}.webp`, {
     noWrap: true,
     maxNativeZoom: (typeof rc.zoomLevel === 'function' ? rc.zoomLevel() : rc.zoomLevel ?? maxZoom.value),
     bounds: rc.getMaxBounds(),

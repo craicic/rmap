@@ -11,7 +11,10 @@ const {user} = useUserSession()
     <logoutHeader/>
     <h1 v-if="user">Welcome {{ user.name }}</h1>
     <div>
-      <NuxtLink to="/map">Map</NuxtLink>
+      <NuxtLink to="/map">View map</NuxtLink>
+    </div>
+    <div>
+      <NuxtLink to="/import">Import map</NuxtLink>
     </div>
     <hr>
   </div>
