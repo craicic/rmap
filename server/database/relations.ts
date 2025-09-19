@@ -1,72 +1,72 @@
 import { relations } from "drizzle-orm/relations";
-import { map, marker, room, user, layer, roomUsers, image, markerImages } from "./schema";
-
-export const markerRelations = relations(marker, ({one}) => ({
-	map: one(map, {
-		fields: [marker.idMap],
-		references: [map.id]
-	}),
-}));
+import { room, map, users, layer, marker, image, markerImages, roomUsers } from "./schema";
 
 export const mapRelations = relations(map, ({one, many}) => ({
-	markers: many(marker),
 	room: one(room, {
-		fields: [map.idRoom],
+		fields: [map.fkRoom],
 		references: [room.id]
 	}),
 	layers: many(layer),
+	markers: many(marker),
 }));
 
 export const roomRelations = relations(room, ({one, many}) => ({
 	maps: many(map),
-	user: one(user, {
-		fields: [room.idOwner],
-		references: [user.id]
+	user: one(users, {
+		fields: [room.fkOwner],
+		references: [users.id]
 	}),
 	roomUsers: many(roomUsers),
 }));
 
-export const userRelations = relations(user, ({many}) => ({
+export const usersRelations = relations(users, ({many}) => ({
 	rooms: many(room),
 	roomUsers: many(roomUsers),
 }));
 
 export const layerRelations = relations(layer, ({one}) => ({
 	map: one(map, {
-		fields: [layer.idMap],
+		fields: [layer.fkMap],
 		references: [map.id]
+	}),
+}));
+
+export const markerRelations = relations(marker, ({one}) => ({
+	map: one(map, {
+		fields: [marker.fkMap],
+		references: [map.id]
+	}),
+}));
+
+export const markerImagesRelations = relations(markerImages, ({one}) => ({
+	image_fkImage: one(image, {
+		fields: [markerImages.fkImage],
+		references: [image.id],
+		relationName: "markerImages_fkImage_image_id"
+	}),
+	image_fkMarker: one(image, {
+		fields: [markerImages.fkMarker],
+		references: [image.id],
+		relationName: "markerImages_fkMarker_image_id"
+	}),
+}));
+
+export const imageRelations = relations(image, ({many}) => ({
+	markerImages_fkImage: many(markerImages, {
+		relationName: "markerImages_fkImage_image_id"
+	}),
+	markerImages_fkMarker: many(markerImages, {
+		relationName: "markerImages_fkMarker_image_id"
 	}),
 }));
 
 export const roomUsersRelations = relations(roomUsers, ({one}) => ({
 	room: one(room, {
-		fields: [roomUsers.idRoom],
+		fields: [roomUsers.fkRoom],
 		references: [room.id]
 	}),
-	user: one(user, {
-		fields: [roomUsers.idPlayer],
-		references: [user.id]
-	}),
-}));
-
-export const markerImagesRelations = relations(markerImages, ({one}) => ({
-	image_idImage: one(image, {
-		fields: [markerImages.idImage],
-		references: [image.id],
-		relationName: "markerImages_idImage_image_id"
-	}),
-	image_idMarker: one(image, {
-		fields: [markerImages.idMarker],
-		references: [image.id],
-		relationName: "markerImages_idMarker_image_id"
-	}),
-}));
-
-export const imageRelations = relations(image, ({many}) => ({
-	markerImages_idImage: many(markerImages, {
-		relationName: "markerImages_idImage_image_id"
-	}),
-	markerImages_idMarker: many(markerImages, {
-		relationName: "markerImages_idMarker_image_id"
+	user: one(users, {
+		fields: [roomUsers.fkPlayer],
+		references: [users.id]
 	}),
 }));
