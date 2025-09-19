@@ -1,108 +1,108 @@
-import { pgTable, foreignKey, bigint, varchar, boolean, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, integer, varchar, boolean, text, primaryKey } from "drizzle-orm/pg-core"
+import { sql } from "drizzle-orm"
 
 
-
-export const marker = pgTable("marker", {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().notNull(),
-	name: varchar({ length: 255 }),
-	description: varchar({ length: 2048 }),
-	x: bigint({ mode: "number" }).notNull(),
-	y: bigint({ mode: "number" }).notNull(),
-	isShown: boolean("is_shown"),
-	idMap: bigint("id_map", { mode: "number" }),
-}, (table) => [
-	foreignKey({
-			columns: [table.idMap],
-			foreignColumns: [map.id],
-			name: "marker_id_map_foreign"
-		}),
-]);
 
 export const map = pgTable("map", {
-	id: bigint({ mode: "number" }).primaryKey().notNull(),
+	id: integer().primaryKey().notNull(),
 	title: varchar({ length: 255 }),
-	idRoom: bigint("id_room", { mode: "number" }).notNull(),
-	maxZoom: bigint("max_zoom", { mode: "number" }).notNull(),
-	minZoom: bigint("min_zoom", { mode: "number" }).notNull(),
+	fkRoom: integer("fk_room").notNull(),
+	maxZoom: integer("max_zoom"),
+	minZoom: integer("min_zoom"),
 }, (table) => [
 	foreignKey({
-			columns: [table.idRoom],
+			columns: [table.fkRoom],
 			foreignColumns: [room.id],
-			name: "map_id_room_foreign"
+			name: "m_fk_room"
 		}),
 ]);
 
-export const image = pgTable("image", {
-	id: bigint({ mode: "number" }).primaryKey().notNull(),
-	path: varchar({ length: 255 }).notNull(),
-	title: varchar({ length: 255 }),
-});
-
 export const room = pgTable("room", {
-	id: bigint({ mode: "number" }).primaryKey().notNull(),
+	id: integer().primaryKey().notNull(),
 	name: varchar({ length: 255 }),
 	url: varchar({ length: 255 }),
-	idOwner: bigint("id_owner", { mode: "number" }).notNull(),
+	fkOwner: integer("fk_owner").notNull(),
 }, (table) => [
 	foreignKey({
-			columns: [table.idOwner],
-			foreignColumns: [user.id],
-			name: "room_id_owner_foreign"
+			columns: [table.fkOwner],
+			foreignColumns: [users.id],
+			name: "r_fk_owner"
 		}),
 ]);
 
 export const layer = pgTable("layer", {
-	id: bigint({ mode: "number" }).primaryKey().notNull(),
+	id: integer().primaryKey().notNull(),
 	name: varchar({ length: 255 }),
-	zIndex: bigint("z_index", { mode: "number" }),
+	zIndex: integer("z_index"),
 	isShown: boolean("is_shown").notNull(),
-	idMap: bigint("id_map", { mode: "number" }).notNull(),
+	fkMap: integer("fk_map").notNull(),
 }, (table) => [
 	foreignKey({
-			columns: [table.idMap],
+			columns: [table.fkMap],
 			foreignColumns: [map.id],
-			name: "layer_id_map_foreign"
+			name: "l_fk_map"
 		}),
 ]);
 
-export const user = pgTable("users", {
-	id: bigint({ mode: "number" }).primaryKey().notNull(),
+export const users = pgTable("users", {
+	id: integer().primaryKey().notNull(),
 	username: varchar({ length: 255 }).notNull(),
 	password: varchar({ length: 255 }).notNull(),
 	email: varchar({ length: 255 }),
 });
 
-export const roomUsers = pgTable("room_users", {
-	idRoom: bigint("id_room", { mode: "number" }).notNull(),
-	idPlayer: bigint("id_player", { mode: "number" }).notNull(),
+export const image = pgTable("image", {
+	id: integer().primaryKey().notNull(),
+	path: varchar({ length: 1000 }).notNull(),
+	title: varchar({ length: 255 }),
+});
+
+export const marker = pgTable("marker", {
+	id: integer().primaryKey().notNull(),
+	name: varchar({ length: 255 }),
+	description: text(),
+	x: integer().notNull(),
+	y: integer().notNull(),
+	isShown: boolean("is_shown").notNull(),
+	fkMap: integer("fk_map").notNull(),
 }, (table) => [
 	foreignKey({
-			columns: [table.idRoom],
-			foreignColumns: [room.id],
-			name: "room_users_id_room_foreign"
+			columns: [table.fkMap],
+			foreignColumns: [map.id],
+			name: "m_fk_map"
 		}),
-	foreignKey({
-			columns: [table.idPlayer],
-			foreignColumns: [user.id],
-			name: "room_users_id_player_foreign"
-		}),
-	primaryKey({ columns: [table.idRoom, table.idPlayer], name: "room_users_pkey"}),
 ]);
 
 export const markerImages = pgTable("marker_images", {
-	idMarker: bigint("id_marker", { mode: "number" }).notNull(),
-	idImage: bigint("id_image", { mode: "number" }).notNull(),
+	fkMarker: integer("fk_marker").notNull(),
+	fkImage: integer("fk_image").notNull(),
 }, (table) => [
 	foreignKey({
-			columns: [table.idImage],
+			columns: [table.fkImage],
 			foreignColumns: [image.id],
-			name: "image_id_foreign"
+			name: "mi_fk_image"
 		}),
 	foreignKey({
-			columns: [table.idMarker],
+			columns: [table.fkMarker],
 			foreignColumns: [image.id],
-			name: "marker_id_foreign"
+			name: "mi_fk_marker"
 		}),
-	primaryKey({ columns: [table.idMarker, table.idImage], name: "marker_images_pkey"}),
+	primaryKey({ columns: [table.fkMarker, table.fkImage], name: "marker_images_pkey"}),
+]);
+
+export const roomUsers = pgTable("room_users", {
+	fkRoom: integer("fk_room").notNull(),
+	fkPlayer: integer("fk_player").notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.fkRoom],
+			foreignColumns: [room.id],
+			name: "ru_fk_room"
+		}),
+	foreignKey({
+			columns: [table.fkPlayer],
+			foreignColumns: [users.id],
+			name: "ru_fk_player"
+		}),
+	primaryKey({ columns: [table.fkRoom, table.fkPlayer], name: "room_users_pkey"}),
 ]);
