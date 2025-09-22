@@ -1,0 +1,452 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.marker": {
+      "name": "marker",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(2048)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x": {
+          "name": "x",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "y": {
+          "name": "y",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_shown": {
+          "name": "is_shown",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_map": {
+          "name": "id_map",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "marker_id_map_foreign": {
+          "name": "marker_id_map_foreign",
+          "tableFrom": "marker",
+          "tableTo": "map",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_map"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.map": {
+      "name": "map",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_room": {
+          "name": "id_room",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "max_zoom": {
+          "name": "max_zoom",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "min_zoom": {
+          "name": "min_zoom",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "map_id_room_foreign": {
+          "name": "map_id_room_foreign",
+          "tableFrom": "map",
+          "tableTo": "room",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_room"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.image": {
+      "name": "image",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.room": {
+      "name": "room",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_owner": {
+          "name": "id_owner",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "room_id_owner_foreign": {
+          "name": "room_id_owner_foreign",
+          "tableFrom": "room",
+          "tableTo": "users",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_owner"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.layer": {
+      "name": "layer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "z_index": {
+          "name": "z_index",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_shown": {
+          "name": "is_shown",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_map": {
+          "name": "id_map",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "layer_id_map_foreign": {
+          "name": "layer_id_map_foreign",
+          "tableFrom": "layer",
+          "tableTo": "map",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_map"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.room_users": {
+      "name": "room_users",
+      "schema": "",
+      "columns": {
+        "id_room": {
+          "name": "id_room",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_player": {
+          "name": "id_player",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "room_users_id_room_foreign": {
+          "name": "room_users_id_room_foreign",
+          "tableFrom": "room_users",
+          "tableTo": "room",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_room"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "room_users_id_player_foreign": {
+          "name": "room_users_id_player_foreign",
+          "tableFrom": "room_users",
+          "tableTo": "users",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_player"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "room_users_pkey": {
+          "name": "room_users_pkey",
+          "columns": [
+            "id_room",
+            "id_player"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.marker_images": {
+      "name": "marker_images",
+      "schema": "",
+      "columns": {
+        "id_marker": {
+          "name": "id_marker",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_image": {
+          "name": "id_image",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "image_id_foreign": {
+          "name": "image_id_foreign",
+          "tableFrom": "marker_images",
+          "tableTo": "image",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_image"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "marker_id_foreign": {
+          "name": "marker_id_foreign",
+          "tableFrom": "marker_images",
+          "tableTo": "image",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_marker"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "marker_images_pkey": {
+          "name": "marker_images_pkey",
+          "columns": [
+            "id_marker",
+            "id_image"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {}
+  }
+}

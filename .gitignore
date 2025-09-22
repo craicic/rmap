@@ -26,5 +26,3 @@ logs
 # Secret files
 public/map.png
 public/map/
-
-server/database/migrations
