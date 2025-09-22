@@ -1,4 +1,5 @@
 <script setup>
+
 definePageMeta({
   middleware: ['authenticated'],
 })
@@ -7,10 +8,12 @@ definePageMeta({
 <template>
   <div>
     <logoutHeader />
-    <import-form />
+    <importForm />
   </div>
 </template>
 
 <style scoped>
-
+div {
+  margin: 0.5rem;
+}
 </style>
