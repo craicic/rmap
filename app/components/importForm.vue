@@ -1,17 +1,31 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 
-const files = ref<FileList | null>(null);
-const url = ref("");
+const url = ref('');
 
+const load = (event: Event) => {
+  if (!import.meta.client) return;
+
+  files.value = (event.target as HTMLInputElement).files
+  if (files.value && files.value[0]) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      url.value = reader.result as string;
+    };
+    reader.readAsDataURL(files.value[0]);
+    switchState()
+  } else {
+    url.value = '';
+  }
+
+}
+
+const files = ref<FileList | null>(null);
+const loaded = ref(false);
 const upload = async () => {
   if (!files.value || files.value.length === 0) return;
-
   const form = new FormData();
-  // If your API expects one file:
   form.append('file', files.value[0] as Blob);
-  // If multiple are supported, you can loop:
-  // Array.from(files.value).forEach(f => form.append('files', f));
 
   try {
     await $fetch('/api/upload', {
@@ -23,36 +37,34 @@ const upload = async () => {
   }
 };
 
-const previewFiles = (event: Event) => {
-  if (!import.meta.client) return;
-
-  files.value = (event.target as HTMLInputElement).files
-  if (files.value && files.value[0]) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      url.value = reader.result as string;
-    };
-    reader.readAsDataURL(files.value[0]);
-  } else {
-    url.value = "";
-  }
+const switchState = () => {
+  loaded.value = !loaded.value;
+}
+const remove = () => {
+  files.value = null;
+  switchState();
 }
 </script>
 
 <template>
-  <form @submit.prevent="upload">
-    <input
-        id="file" type="file"
-        accept="image/jpeg, image/png, image/webp, image/avif"
-        @change="previewFiles">
-    <button id="upload" type="submit">Upload</button>
-  </form>
-  <img v-if="files" alt="Selected image" :src="url">
+  <input
+      v-if="!loaded"
+      id="file" type="file"
+      accept="image/jpeg, image/png, image/webp, image/avif"
+      @change="load">
+  <button v-if="loaded" id="remove" type="submit" @click.prevent="remove">Remove</button>
+  <button id="upload" type="submit" @click.prevent="upload">Upload</button>
+
+  <div v-if="loaded">
+    <img alt="Selected image" :src="url">
+    <!--    <button id="details" type="submit" @submit.prevent="displayDetails">Display details</button>-->
+  </div>
 </template>
 <style scoped>
 img {
   height: 50vh;
 }
+
 * {
   margin-top: 0.5rem;
 }
