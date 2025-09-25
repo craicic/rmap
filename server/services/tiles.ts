@@ -1,20 +1,17 @@
-class Tiles {
-    constructor(file: File) {
-        this.input = file;
-    }
+import type Format from '~/shared/enum/format.enum';
+import {exec} from 'child_process';
 
-    input: File;
 
-    imageToTiles(title: string, maxZoom: number, minZoom: number, format: Format) {
+export default function imageToTiles(filePath: string, title: string, maxZoom: number, minZoom: number, format: Format) {
 
-    }
-}
+    exec('conda activate geospatial', (err, stdout, stderr) => {
+        if (err) {
+            // node couldn't execute the command
+            return;
+        }
 
-export default class;
-
-enum Format {
-    JPEG = 'jpeg',
-    PNG = 'PNG',
-    AVIF = 'avif',
-    WEBP = 'webp'
+        // the *entire* stdout and stderr (buffered)
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+    });
 }
