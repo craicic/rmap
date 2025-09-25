@@ -53,7 +53,7 @@ const remove = () => {
       accept="image/jpeg, image/png, image/webp, image/avif"
       @change="load">
   <button v-if="loaded" id="remove" type="submit" @click.prevent="remove">Remove</button>
-  <button id="upload" type="submit" @click.prevent="upload">Upload</button>
+  <button v-if="loaded" id="upload" type="submit" @click.prevent="upload">Upload</button>
 
   <div v-if="loaded">
     <img alt="Selected image" :src="url">
