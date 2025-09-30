@@ -54,6 +54,8 @@ const remove = () => {
       @change="load">
   <button v-if="loaded" id="remove" type="submit" @click.prevent="remove">Remove</button>
   <button v-if="loaded" id="upload" type="submit" @click.prevent="upload">Upload</button>
+  <hr>
+  <uploadForm v-if="loaded"/>
 
   <div v-if="loaded">
     <img alt="Selected image" :src="url">
