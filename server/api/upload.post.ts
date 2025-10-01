@@ -4,33 +4,67 @@ import path from 'path';
 import os from 'os';
 
 export default defineEventHandler(async (event) => {
-    const files = await readMultipartFormData(event);
+    const formData = await readMultipartFormData(event);
+
+    if (!formData) {
+        console.log('No form data received');
+        throw createError({
+            statusCode: 400,
+            message: 'No form data received'
+        });
+    }
+
     const tempDirPath = fs.mkdtempSync(path.join(os.tmpdir(), 'rmap-'));
-    console.log(tempDirPath)
-    files?.forEach((file) => {
-        if (!file || !file.type || !file.filename) return;
+    let file = null;
+    let filepath: string = '';
+    const metadata: Record<string, string> = {};
+    let title;
+    let minZoom;
+    let maxZoom;
+    let format;
 
-        // Normalize MIME to canonical extension
-        const mime = file.type.toLowerCase();
-        const mimeToExt: Record<string, string> = {
-            'image/png': 'png',
-            'image/jpeg': 'jpg',
-            'image/jpg': 'jpg',
-            'image/webp': 'webp',
-        };
-        const ext = mimeToExt[mime] ?? 'bin';
-
-        const filepath: string = path.join(tempDirPath, file.filename);
-        fs.writeFileSync(filepath, file.data);
-
-        const allowed = new Set(['png', 'jpg', 'webp']);
-        if (allowed.has(ext)) {
-            try {
-                console.log(imageToTiles(filepath, file.filename, 0, 4, ext));
-            } catch (err) {
-                console.error('imageToTiles failed:', err);
+    formData?.forEach((part) => {
+        if (part.filename) {
+            file = {
+                filename: part.filename,
+                data: part.data,
+                type: part.type
             }
+            if (!file || !file.type || !file.filename) return;
+            // Normalize MIME to canonical extension
+            const mime = file.type.toLowerCase();
+            const mimeToExt: Record<string, string> = {
+                'image/png': 'png',
+                'image/jpeg': 'jpg',
+                'image/jpg': 'jpg',
+                'image/webp': 'webp',
+            };
+            const ext = mimeToExt[mime] ?? 'bin';
+
+            filepath = path.join(tempDirPath, file.filename);
+            fs.writeFileSync(filepath, file.data);
+            const allowed = new Set(['png', 'jpg', 'webp']);
+            if (!allowed.has(ext)) {
+                console.log("Wrong file format")
+                throw createError({
+                    statusCode: 400,
+                    message: 'Wrong file format'
+                });
+            }
+        } else if (part.name) {
+            // These are the additional fields (title, minZoom, maxZoom, format, etc.)
+            metadata[part.name] = part.data.toString('utf-8');
+            // Now you can access your fields like:
         }
     });
+    title = metadata.title;
+    minZoom = metadata.minZoom;
+    maxZoom = metadata.maxZoom;
+    format = metadata.format;
+    try {
+        imageToTiles(filepath, title, minZoom, maxZoom, format);
+    } catch (err) {
+        console.error('imageToTiles failed:', err);
+    }
     return 200;
 });

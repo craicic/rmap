@@ -2,18 +2,16 @@ import {exec} from 'child_process';
 import {randomDirName} from '~~/server/services/generator';
 import fs from 'fs';
 
-export default function imageToTiles(filepath: string, title: string, minZoom: number, maxZoom: number, format: string) {
-    console.log('filePath = ' + filepath)
-    console.log('title = ' + title)
-    console.log('format = ' + format)
+export default function imageToTiles(filepath: string, title: string, minZoom: string, maxZoom: string, format: string) {
+    const config = useRuntimeConfig();
+    const outDir = `public/maps/${title}-` + randomDirName(6);
 
-    const outDir = 'public/maps/' + randomDirName(6);
     fs.mkdir(outDir, {recursive: true}, (err) => {
         if (err) throw err;
     });
 
     const cmd = [
-        'source ~/Development/env/miniconda3/etc/profile.d/conda.sh',
+        `source ${config.public.minicondaDir}etc/profile.d/conda.sh`,
         'conda activate geospatial',
         `gdal2tiles.py --xyz -p raster --zoom=${minZoom}-${maxZoom} --webviewer=leaflet "${filepath}" "${outDir}/"`
     ].join(' && ');
@@ -30,5 +28,5 @@ export default function imageToTiles(filepath: string, title: string, minZoom: n
         }
         console.log('gdal2tiles completed successfully');
     });
-    return outDir;
+    return {out:outDir, format: format};
 }

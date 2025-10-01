@@ -2,7 +2,8 @@
 import {ref} from 'vue';
 
 const url = ref('');
-
+const detailed = ref(false);
+let fileInfo: {title: string, min: number, max: number, outputFormat: string}
 const load = (event: Event) => {
   if (!import.meta.client) return;
 
@@ -13,7 +14,7 @@ const load = (event: Event) => {
       url.value = reader.result as string;
     };
     reader.readAsDataURL(files.value[0]);
-    switchState()
+    switchState();
   } else {
     url.value = '';
   }
@@ -26,6 +27,10 @@ const upload = async () => {
   if (!files.value || files.value.length === 0) return;
   const form = new FormData();
   form.append('file', files.value[0] as Blob);
+  form.append('title', fileInfo.title)
+  form.append('minZoom', fileInfo.min.toString())
+  form.append('maxZoom', fileInfo.max.toString())
+  form.append('format', fileInfo.outputFormat)
 
   try {
     await $fetch('/api/upload', {
@@ -44,6 +49,11 @@ const remove = () => {
   files.value = null;
   switchState();
 }
+
+const setDetails = (title: string, min: number, max: number, outputFormat: string) => {
+  detailed.value = true
+  fileInfo = {title: title, min: min, max: max, outputFormat: outputFormat}
+}
 </script>
 
 <template>
@@ -53,9 +63,9 @@ const remove = () => {
       accept="image/jpeg, image/png, image/webp, image/avif"
       @change="load">
   <button v-if="loaded" id="remove" type="submit" @click.prevent="remove">Remove</button>
-  <button v-if="loaded" id="upload" type="submit" @click.prevent="upload">Upload</button>
+  <button v-if="detailed" id="upload" type="submit" @click.prevent="upload">Upload</button>
   <hr>
-  <uploadForm v-if="loaded"/>
+  <importDetails v-if="loaded" @is-set="setDetails"/>
 
   <div v-if="loaded">
     <img alt="Selected image" :src="url">
