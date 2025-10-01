@@ -5,7 +5,7 @@ const selected = ref('webp')
 const options = ref([
   {text: 'WEBP', value: 'webp'},
   {text: 'PNG', value: 'png'},
-  {text: 'JPG', value: 'jpg'}
+  {text: 'JPEG', value: 'jpeg'}
 ])
 const min = ref(0)
 const max = ref(4)
@@ -19,7 +19,7 @@ const setMin = (e: Event) => {
 
 const saveMin = () => {
   minSaved.value = true;
-  range.value.splice(0, min.value + 1)
+  range.value.splice(0, min.value )
 }
 
 const setMax = (e: Event) => {
@@ -46,13 +46,11 @@ const setTitle = (e: Event) => {
 <template>
   <form>
     <div>
-      <label for="title">Choose map title: </label>
+      <label for="title">Nom de la carte : </label>
       <input id="title" type="text" @change="setTitle">
     </div>
     <div>
-
-      <div>Selected: {{ selected }}</div>
-      <label for="uname">Choose map title: </label>
+      <label for="uname">Format de sortie : </label>
       <select v-model="selected">
         <option v-for="option in options" :key="option.value" :value="option.value">
           {{ option.text }}
@@ -60,42 +58,42 @@ const setTitle = (e: Event) => {
       </select>
     </div>
     <div>
-      <label for="min">Minimal zoom level : {{ min }}</label><br>
+      <label for="min">Niveau de zoom minimum : {{ min }}</label><br>
     </div>
     <div v-if="!minSaved">
       <input id="min" type="range" min="0" max="4" step="1" list="markers1" :value="min.toString()" @change="setMin">
 
       <datalist id="markers1">
-        <option value="0" label="Far zoom"></option>
-        <option value="1" label=""></option>
-        <option value="2" label=""></option>
-        <option value="3" label=""></option>
-        <option value="4" label="Close zoom"></option>
+        <option value="0" label="Dézoomé"/>
+        <option value="1" label=""/>
+        <option value="2" label=""/>
+        <option value="3" label=""/>
+        <option value="4" label="Très zoomé"/>
       </datalist>
 
-      <button id="saveMin" type="button" @click.prevent="saveMin">Save Minimal Zoom Level</button>
+      <button id="saveMin" type="button" @click.prevent="saveMin">Valider le zoom minimum</button>
     </div>
 
     <div v-else>
       <div>
-        <label for="min">Maximal zoom level : {{ max }}</label><br>
+        <label for="min">Niveau de zoom minimum : {{ max }}</label><br>
       </div>
       <div v-if="!maxSaved">
         <input id="max" type="range" :min="range[0]" max="8" step="1" list="markers2" :value="max" @change="setMax">
 
         <datalist id="markers2">
-          <option v-for="number in range" :key="number" :value="number" :label="number.toString()"></option>
+          <option v-for="number in range" :key="number" :value="number" :label="number.toString()"/>
         </datalist>
-        <button id="saveMin" type="button" @click.prevent="saveMax">Save Maximal Zoom Level</button>
+        <button id="saveMin" type="button" @click.prevent="saveMax">Valider le niveau de zoom</button>
       </div>
     </div>
     <hr>
     <div>
-      <button id="reset" type="button" @click.prevent="resetForm">Reset form</button>
+      <button id="reset" type="button" @click.prevent="resetForm">Réinitialiser les zooms</button>
 
       <button
           v-if="minSaved && maxSaved && title" id="transform" type="button"
-          @click.prevent="$emit('isSet', title, min, max, selected)">
+          @click.prevent="$emit('isSet', title, min.toString(), max.toString(), selected)">
         Transform map to tiles
       </button>
     </div>

@@ -18,10 +18,7 @@ export default defineEventHandler(async (event) => {
     let file = null;
     let filepath: string = '';
     const metadata: Record<string, string> = {};
-    let title;
-    let minZoom;
-    let maxZoom;
-    let format;
+
 
     formData?.forEach((part) => {
         if (part.filename) {
@@ -35,15 +32,15 @@ export default defineEventHandler(async (event) => {
             const mime = file.type.toLowerCase();
             const mimeToExt: Record<string, string> = {
                 'image/png': 'png',
-                'image/jpeg': 'jpg',
-                'image/jpg': 'jpg',
+                'image/jpeg': 'jpeg',
+                'image/jpg': 'jpeg',
                 'image/webp': 'webp',
             };
             const ext = mimeToExt[mime] ?? 'bin';
 
             filepath = path.join(tempDirPath, file.filename);
             fs.writeFileSync(filepath, file.data);
-            const allowed = new Set(['png', 'jpg', 'webp']);
+            const allowed = new Set(['png', 'jpeg', 'webp']);
             if (!allowed.has(ext)) {
                 console.log("Wrong file format")
                 throw createError({
@@ -57,10 +54,10 @@ export default defineEventHandler(async (event) => {
             // Now you can access your fields like:
         }
     });
-    title = metadata.title;
-    minZoom = metadata.minZoom;
-    maxZoom = metadata.maxZoom;
-    format = metadata.format;
+    const title = metadata.title;
+    const minZoom = metadata.minZoom;
+    const maxZoom = metadata.maxZoom;
+    const format = metadata.format;
     try {
         imageToTiles(filepath, title, minZoom, maxZoom, format);
     } catch (err) {

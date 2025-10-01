@@ -9,12 +9,12 @@ const {user} = useUserSession()
 <template>
   <div>
     <logoutHeader/>
-    <h1 v-if="user">Welcome {{ user.name }}</h1>
+    <h1 v-if="user">Bienvenu {{ user.name }}</h1>
     <div>
-      <NuxtLink to="/map">View map</NuxtLink>
+      <NuxtLink to="/map">Voir la carte</NuxtLink>
     </div>
     <div>
-      <NuxtLink to="/import">Import map</NuxtLink>
+      <NuxtLink to="/import">Importer une carte</NuxtLink>
     </div>
     <hr>
   </div>

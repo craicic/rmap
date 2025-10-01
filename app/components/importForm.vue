@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import {ref} from 'vue';
-
 const url = ref('');
 const detailed = ref(false);
-let fileInfo: {title: string, min: number, max: number, outputFormat: string}
+let fileInfo: { title: string, min: string, max: string, outputFormat: string }
 const load = (event: Event) => {
   if (!import.meta.client) return;
 
@@ -18,7 +17,6 @@ const load = (event: Event) => {
   } else {
     url.value = '';
   }
-
 }
 
 const files = ref<FileList | null>(null);
@@ -28,8 +26,8 @@ const upload = async () => {
   const form = new FormData();
   form.append('file', files.value[0] as Blob);
   form.append('title', fileInfo.title)
-  form.append('minZoom', fileInfo.min.toString())
-  form.append('maxZoom', fileInfo.max.toString())
+  form.append('minZoom', fileInfo.min)
+  form.append('maxZoom', fileInfo.max)
   form.append('format', fileInfo.outputFormat)
 
   try {
@@ -50,7 +48,7 @@ const remove = () => {
   switchState();
 }
 
-const setDetails = (title: string, min: number, max: number, outputFormat: string) => {
+const setDetails = (title: string, min: string, max: string, outputFormat: string) => {
   detailed.value = true
   fileInfo = {title: title, min: min, max: max, outputFormat: outputFormat}
 }
@@ -60,7 +58,7 @@ const setDetails = (title: string, min: number, max: number, outputFormat: strin
   <input
       v-if="!loaded"
       id="file" type="file"
-      accept="image/jpeg, image/png, image/webp, image/avif"
+      accept="image/jpeg, image/png, image/webp"
       @change="load">
   <button v-if="loaded" id="remove" type="submit" @click.prevent="remove">Remove</button>
   <button v-if="detailed" id="upload" type="submit" @click.prevent="upload">Upload</button>
@@ -69,7 +67,6 @@ const setDetails = (title: string, min: number, max: number, outputFormat: strin
 
   <div v-if="loaded">
     <img alt="Selected image" :src="url">
-    <!--    <button id="details" type="submit" @submit.prevent="displayDetails">Display details</button>-->
   </div>
 </template>
 <style scoped>

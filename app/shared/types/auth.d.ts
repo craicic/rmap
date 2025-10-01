@@ -3,7 +3,6 @@ import '#auth-utils';
 declare module '#auth-utils' {
     interface User {
         github?: string
-
         name?: string
         email?: string
         password?: string

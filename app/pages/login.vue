@@ -27,8 +27,8 @@ async function login() {
 <template>
   <form @submit.prevent="login">
     <input v-model="credentials.email" type="email" placeholder="Email">
-    <input v-model="credentials.password" type="password" placeholder="Password">
-    <button type="submit">Login</button>
+    <input v-model="credentials.password" type="password" placeholder="Mot de passe">
+    <button type="submit">Se connecter</button>
     <div v-if="error">{{ error }}</div>
   </form>
 </template>

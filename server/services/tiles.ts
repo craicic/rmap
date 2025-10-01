@@ -13,7 +13,8 @@ export default function imageToTiles(filepath: string, title: string, minZoom: s
     const cmd = [
         `source ${config.public.minicondaDir}etc/profile.d/conda.sh`,
         'conda activate geospatial',
-        `gdal2tiles.py --xyz -p raster --zoom=${minZoom}-${maxZoom} --webviewer=leaflet "${filepath}" "${outDir}/"`
+        `gdal2tiles.py --xyz -p raster --zoom=${minZoom}-${maxZoom} --webviewer=leaflet "${filepath}" "${outDir}/ 
+        --tiledriver=${format.toUpperCase()}"`
     ].join(' && ');
     // Use exec with bash -lc to load conda and run command
     exec(cmd, {shell: '/usr/bin/bash'}, (error, stdout, stderr) => {

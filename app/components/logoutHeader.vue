@@ -14,9 +14,9 @@ async function logout() {
       <NuxtLink to="/map">Go to map</NuxtLink>
     </div>
     <div v-else class="link">
-      <NuxtLink to="/">Return to index</NuxtLink>
+      <NuxtLink to="/">Retourner à l'index</NuxtLink>
     </div>
-    <button id="logout" @click="logout">Logout</button>
+    <button id="logout" @click="logout">Se déconnecter</button>
   </div>
   <hr>
 </template>
