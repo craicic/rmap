@@ -33,7 +33,7 @@ const saveMax = () => {
 const resetForm = () => {
   min.value = 0;
   max.value = 4;
-  range.value = [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8];
+  range.value = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   minSaved.value = false;
   maxSaved.value = false;
 }
