@@ -5,7 +5,8 @@ export default defineNuxtConfig({
     modules: ['@nuxt/eslint', '@nuxt/test-utils', 'nuxt-auth-utils'],
     runtimeConfig: {
         public: {
-            minicondaDir: process.env.MINICONDA_DIR
+            minicondaDir: process.env.MINICONDA_DIR,
+            mapsDir: process.env.MAPS_DIR,
         }
     }
 })

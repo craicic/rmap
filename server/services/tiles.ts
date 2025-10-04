@@ -2,9 +2,14 @@ import {exec} from 'child_process';
 import {randomDirName} from '~~/server/services/generator';
 import fs from 'fs';
 
-export default function imageToTiles(filepath: string, title: string, minZoom: string, maxZoom: string, format: string) {
+export default function imageToTiles(filepath: string,
+                                     name: string,
+                                     minZoom: string,
+                                     maxZoom: string,
+                                     format: string) {
     const config = useRuntimeConfig();
-    const outDir = `public/maps/${title}-` + randomDirName(6);
+    const dirName = `${name}-` + randomDirName(6);
+    const outDir = `${config.public.mapsDir}` + dirName;
 
     fs.mkdir(outDir, {recursive: true}, (err) => {
         if (err) throw err;
@@ -13,8 +18,7 @@ export default function imageToTiles(filepath: string, title: string, minZoom: s
     const cmd = [
         `source ${config.public.minicondaDir}etc/profile.d/conda.sh`,
         'conda activate geospatial',
-        `gdal2tiles.py --xyz -p raster --zoom=${minZoom}-${maxZoom} --webviewer=leaflet "${filepath}" "${outDir}/ 
-        --tiledriver=${format.toUpperCase()}"`
+        `gdal2tiles.py --xyz -p raster --zoom=${minZoom}-${maxZoom} --webviewer=leaflet "${filepath}" "${outDir}/" --tiledriver="${format.toUpperCase()}"`
     ].join(' && ');
     // Use exec with bash -lc to load conda and run command
     exec(cmd, {shell: '/usr/bin/bash'}, (error, stdout, stderr) => {
@@ -29,5 +33,5 @@ export default function imageToTiles(filepath: string, title: string, minZoom: s
         }
         console.log('gdal2tiles completed successfully');
     });
-    return {out:outDir, format: format};
+    return dirName;
 }

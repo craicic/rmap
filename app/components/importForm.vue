@@ -1,34 +1,52 @@
 <script setup lang="ts">
-import {ref} from 'vue';
+import { ref, nextTick } from 'vue';
+
 const url = ref('');
-const detailed = ref(false);
-let fileInfo: { title: string, min: string, max: string, outputFormat: string }
-const load = (event: Event) => {
-  if (!import.meta.client) return;
-
-  files.value = (event.target as HTMLInputElement).files
-  if (files.value && files.value[0]) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      url.value = reader.result as string;
-    };
-    reader.readAsDataURL(files.value[0]);
-    switchState();
-  } else {
-    url.value = '';
-  }
-}
-
-const files = ref<FileList | null>(null);
 const loaded = ref(false);
-const upload = async () => {
-  if (!files.value || files.value.length === 0) return;
+
+let inputEl: HTMLInputElement | null = null;
+const imgEl = ref<HTMLImageElement | null>(null);
+
+const load = (e: Event) => {
+  if (!import.meta.client) return;
+  if (!e.target) return;
+  inputEl = e.target as HTMLInputElement;
+  const file = inputEl.files?.[0];
+  if (!file) {
+    url.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    url.value = reader.result as string; // data URL for preview
+    switchState();
+  };
+  reader.readAsDataURL(file);
+};
+
+const upload = async (name: string, min: string, max: string, outputFormat: string) => {
+  if (!inputEl?.files?.[0]) return;
+
+  // ensure <img> rendered and loaded to read natural sizes
+  await nextTick();
+  // if the image hasn't loaded yet, wait for it
+  if (imgEl.value && !imgEl.value.complete) {
+    await new Promise<void>((resolve) => {
+      imgEl.value!.addEventListener('load', () => resolve(), { once: true });
+      imgEl.value!.addEventListener('error', () => resolve(), { once: true });
+    });
+  }
+  const width = imgEl.value?.naturalWidth?.toString() ?? '';
+  const height = imgEl.value?.naturalHeight?.toString() ?? '';
+
   const form = new FormData();
-  form.append('file', files.value[0] as Blob);
-  form.append('title', fileInfo.title)
-  form.append('minZoom', fileInfo.min)
-  form.append('maxZoom', fileInfo.max)
-  form.append('format', fileInfo.outputFormat)
+  form.append('file', inputEl.files[0]);
+  form.append('name', name);
+  form.append('minZoom', min);
+  form.append('maxZoom', max);
+  form.append('format', outputFormat);
+  form.append('width', width);
+  form.append('height', height);
 
   try {
     await $fetch('/api/upload', {
@@ -42,33 +60,33 @@ const upload = async () => {
 
 const switchState = () => {
   loaded.value = !loaded.value;
-}
+};
 const remove = () => {
-  files.value = null;
-  switchState();
-}
-
-const setDetails = (title: string, min: string, max: string, outputFormat: string) => {
-  detailed.value = true
-  fileInfo = {title: title, min: min, max: max, outputFormat: outputFormat}
-}
+  inputEl = null;
+  url.value = '';
+  loaded.value = false;
+};
 </script>
 
 <template>
   <input
-      v-if="!loaded"
-      id="file" type="file"
-      accept="image/jpeg, image/png, image/webp"
-      @change="load">
-  <button v-if="loaded" id="remove" type="submit" @click.prevent="remove">Remove</button>
-  <button v-if="detailed" id="upload" type="submit" @click.prevent="upload">Upload</button>
-  <hr>
-  <importDetails v-if="loaded" @is-set="setDetails"/>
+    v-if="!loaded"
+    id="file"
+    type="file"
+    accept="image/jpeg, image/png, image/webp"
+    @change="load"
+  />
+  <button v-if="loaded" id="remove" type="submit" @click.prevent="remove">
+    Retirer l'image
+  </button>
+  <hr />
+  <importDetails v-if="loaded" @is-set="upload" />
 
   <div v-if="loaded">
-    <img alt="Selected image" :src="url">
+    <img ref="imgEl" alt="Selected image" :src="url" />
   </div>
 </template>
+
 <style scoped>
 img {
   height: 50vh;

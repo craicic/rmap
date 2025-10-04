@@ -12,7 +12,7 @@ const max = ref(4)
 const range: Ref<number[], number[]> = ref([0, 1, 2, 3, 4, 5, 6, 7, 8])
 const minSaved = ref(false)
 const maxSaved = ref(false)
-const title = ref('')
+const name = ref('')
 const setMin = (e: Event) => {
   min.value = Number((e.target as HTMLInputElement).value)
 }
@@ -38,16 +38,16 @@ const resetForm = () => {
   maxSaved.value = false;
 }
 
-const setTitle = (e: Event) => {
-  title.value = (e.target as HTMLInputElement).value
+const setName = (e: Event) => {
+  name.value = (e.target as HTMLInputElement).value
 }
 </script>
 
 <template>
   <form>
     <div>
-      <label for="title">Nom de la carte : </label>
-      <input id="title" type="text" @change="setTitle">
+      <label for="name">Nom de la carte : </label>
+      <input id="name" type="text" pattern="[a-zA-Z0-9]+" @change="setName">
     </div>
     <div>
       <label for="uname">Format de sortie : </label>
@@ -92,9 +92,9 @@ const setTitle = (e: Event) => {
       <button id="reset" type="button" @click.prevent="resetForm">Réinitialiser les zooms</button>
 
       <button
-          v-if="minSaved && maxSaved && title" id="transform" type="button"
-          @click.prevent="$emit('isSet', title, min.toString(), max.toString(), selected)">
-        Transform map to tiles
+          v-if="minSaved && maxSaved && name" id="transform" type="button"
+          @click.prevent="$emit('isSet', name, min.toString(), max.toString(), selected)">
+        Transformer l'image en tuiles
       </button>
     </div>
   </form>
