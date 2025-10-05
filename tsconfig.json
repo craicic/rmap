@@ -13,6 +13,11 @@
     },
     {
       "path": "./.nuxt/tsconfig.node.json"
-    }
+    },
+  ],
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.vue",
+    "types/**/*.d.ts"
   ]
 }
