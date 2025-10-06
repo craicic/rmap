@@ -1,8 +1,11 @@
 // import path from 'node:path';
 // import { fileURLToPath } from 'node:url';
+
+// TODO: fix worker path issue with Nuxt 4
+// https://github.com/nuxt/nuxt/discussions/16296
 import { Worker } from 'node:worker_threads';
 
-import workerPath from './worker?worker';
+import workerPath from './worker.js?worker&url';
 
 const run = (
 	filepath: string,
