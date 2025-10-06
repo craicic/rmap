@@ -1,12 +1,11 @@
 <script setup>
 definePageMeta({
-  middleware: ['authenticated'],
-})
+	middleware: ['authenticated'],
+});
 </script>
 <template>
-  <div>
-    <logoutHeader />
-    <mapViewer/>
-  </div>
+	<div>
+		<logoutHeader />
+		<mapViewer />
+	</div>
 </template>
-
