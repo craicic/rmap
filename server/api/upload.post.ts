@@ -75,6 +75,8 @@ export default defineEventHandler(async (event) => {
 			info.minZoom,
 			info.maxZoom,
 			info.format,
+            info.width,
+            info.height
 		);
 	} catch (err) {
 		console.error('imageToTiles failed:', err);
