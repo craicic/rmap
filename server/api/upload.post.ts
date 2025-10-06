@@ -1,9 +1,9 @@
-import fs from 'fs';
-import imageToTiles from '../services/tiles';
-import path from 'path';
-import os from 'os';
-import { env } from 'process';
 import type { mapInfo } from '#shared/info';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { env } from 'process';
+import generateTiles from '../services/tiles-sharp';
 
 export default defineEventHandler(async (event) => {
 	const formData = await readMultipartFormData(event);
@@ -68,7 +68,14 @@ export default defineEventHandler(async (event) => {
 		height: metadata.height,
 	};
 	try {
-		info.location = imageToTiles(filepath, info.name, info.minZoom, info.maxZoom, info.format);
+		// info.location = imageToTiles(filepath, info.name, info.minZoom, info.maxZoom, info.format);
+		info.location = await generateTiles(
+			filepath,
+			info.name,
+			info.minZoom,
+			info.maxZoom,
+			info.format,
+		);
 	} catch (err) {
 		console.error('imageToTiles failed:', err);
 	}
