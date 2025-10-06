@@ -5,7 +5,7 @@ const selected = ref('webp');
 const options = ref([
 	{ text: 'WEBP', value: 'webp' },
 	{ text: 'PNG', value: 'png' },
-	{ text: 'JPEG', value: 'jpeg' },
+	{ text: 'AVIF', value: 'avif' },
 ]);
 const min = ref(0);
 const max = ref(4);
@@ -86,7 +86,7 @@ const setName = (e: Event) => {
 
 		<div v-else>
 			<div>
-				<label for="min">Niveau de zoom minimum : {{ max }}</label
+				<label for="max">Niveau de zoom maximum : {{ max }}</label
 				><br />
 			</div>
 			<div v-if="!maxSaved">
@@ -117,14 +117,13 @@ const setName = (e: Event) => {
 		<hr />
 		<div>
 			<button id="reset" type="button" @click.prevent="resetForm">Réinitialiser les zooms</button>
-
 			<button
 				v-if="minSaved && maxSaved && name"
 				id="transform"
 				type="button"
 				@click.prevent="$emit('isSet', name, min.toString(), max.toString(), selected)"
 			>
-				Transformer l'image en tuiles
+				Image => Tuiles
 			</button>
 		</div>
 	</form>

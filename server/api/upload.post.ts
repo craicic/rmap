@@ -37,12 +37,13 @@ export default defineEventHandler(async (event) => {
 				'image/jpeg': 'jpeg',
 				'image/jpg': 'jpeg',
 				'image/webp': 'webp',
+				'image/avif': 'avif',
 			};
 			const ext = mimeToExt[mime] ?? 'bin';
 
 			filepath = path.join(tempDirPath, file.filename);
 			fs.writeFileSync(filepath, file.data);
-			const allowed = new Set(['png', 'jpeg', 'webp']);
+			const allowed = new Set(['png', 'jpeg', 'webp', 'avif']);
 			if (!allowed.has(ext)) {
 				console.log('Wrong file format');
 				throw createError({
@@ -53,8 +54,7 @@ export default defineEventHandler(async (event) => {
 		} else if (part.name) {
 			// These are the additional fields (name, minZoom, maxZoom, format, etc.)
 			metadata[part.name] = part.data.toString('utf-8');
-			console.log(metadata[part.name]);
-			// Now you can access your fields like:
+			console.log(part.name + '=' + metadata[part.name]);
 		}
 	});
 
@@ -68,18 +68,17 @@ export default defineEventHandler(async (event) => {
 		height: metadata.height,
 	};
 	try {
-		// info.location = imageToTiles(filepath, info.name, info.minZoom, info.maxZoom, info.format);
 		info.location = await generateTiles(
 			filepath,
 			info.name,
 			info.minZoom,
 			info.maxZoom,
 			info.format,
-            info.width,
-            info.height
+			info.width,
+			info.height,
 		);
 	} catch (err) {
-		console.error('imageToTiles failed:', err);
+		console.error('generateTiles failed:', err);
 	}
 
 	const data = JSON.parse(fs.readFileSync(env.MAPS_DIR + 'metadata.json', 'utf8'));
@@ -90,8 +89,9 @@ export default defineEventHandler(async (event) => {
 		if (err) {
 			console.log('Error writing file:', err);
 		} else {
-			console.log('Successfully wrote file');
+			console.log('Successfully appended metadata.json file');
 		}
 	});
-	return 200;
+
+	return { id: data.maps.length - 1 };
 });

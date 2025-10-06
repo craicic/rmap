@@ -8,10 +8,7 @@ const { user } = useUserSession();
 <template>
 	<div>
 		<logoutHeader />
-		<h1 v-if="user">Bienvenu {{ user.name }}</h1>
-		<div>
-			<NuxtLink to="/map">Voir la carte par défaut</NuxtLink>
-		</div>
+		<h1 v-if="user">Bienvenue {{ user.name }}</h1>
 		<div>
 			<NuxtLink to="/import">Importer une carte</NuxtLink>
 		</div>

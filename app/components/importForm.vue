@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
+import { nextTick, ref } from 'vue';
+import { navigateTo, useRoute } from '../../.nuxt/imports';
 
 const url = ref('');
 const loaded = ref(false);
@@ -49,10 +50,12 @@ const upload = async (name: string, min: string, max: string, outputFormat: stri
 	form.append('height', height);
 
 	try {
-		await $fetch('/api/upload', {
+		let response = await $fetch('/api/upload', {
 			method: 'POST',
 			body: form,
 		});
+		console.log('Navigating to /maps/' + response.id);
+		navigateTo('/maps/' + response.id);
 	} catch (e) {
 		console.error('Upload failed', e);
 	}
@@ -69,19 +72,21 @@ const remove = () => {
 </script>
 
 <template>
-	<input
-		v-if="!loaded"
-		id="file"
-		type="file"
-		accept="image/jpeg, image/png, image/webp"
-		@change="load"
-	/>
-	<button v-if="loaded" id="remove" type="submit" @click.prevent="remove">Retirer l'image</button>
-	<hr />
-	<importDetails v-if="loaded" @is-set="upload" />
+	<div>
+		<input
+			v-if="!loaded"
+			id="file"
+			type="file"
+			accept="image/jpeg, image/png, image/webp, image/avif"
+			@change="load"
+		/>
+		<button v-if="loaded" id="remove" type="submit" @click.prevent="remove">Retirer l'image</button>
+		<hr />
+		<importDetails v-if="loaded" @is-set="upload" />
 
-	<div v-if="loaded">
-		<img ref="imgEl" alt="Selected image" :src="url" />
+		<div v-if="loaded">
+			<img ref="imgEl" alt="Selected image" :src="url" />
+		</div>
 	</div>
 </template>
 

@@ -3,11 +3,20 @@ import 'leaflet/dist/leaflet.css';
 import { onMounted, ref } from 'vue';
 import * as L from 'leaflet';
 import RasterCoords from 'leaflet-rastercoords';
+import LogoutHeader from '../../components/logoutHeader.vue';
 
 const route = useRoute();
-const maps = JSON.parse(localStorage.getItem('maps') as string);
-const map = maps[route.params.id as keyof typeof maps];
+const id = String(route.params.id);
 
+// Fetch one map by id
+const map = await $fetch(`/api/maps/${encodeURIComponent(id)}/metadata`).catch((e) => {
+	console.error('Fetch metadata failed', e);
+	return null;
+});
+
+if (!map) {
+	throw createError({ statusCode: 404, statusMessage: 'Map not found' });
+}
 const location: string = map.location;
 const format: string = map.format;
 const maxZoom = ref<number>(Number(map.maxZoom));
@@ -39,5 +48,6 @@ onMounted(() => {
 </script>
 
 <template>
+	<logoutHeader />
 	<div :id="mapId" style="height: 90vh"></div>
 </template>

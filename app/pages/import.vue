@@ -5,10 +5,8 @@ definePageMeta({
 </script>
 
 <template>
-	<div>
-		<logoutHeader />
-		<importForm />
-	</div>
+	<logoutHeader />
+	<importForm />
 </template>
 
 <style scoped>
