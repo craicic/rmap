@@ -37,8 +37,8 @@ const upload = async (name: string, min: string, max: string, outputFormat: stri
 			imgEl.value!.addEventListener('error', () => resolve(), { once: true });
 		});
 	}
-	const width = imgEl.value?.naturalWidth?.toString() ?? '';
-	const height = imgEl.value?.naturalHeight?.toString() ?? '';
+	const width: number = imgEl.value?.naturalWidth ?? 0;
+	const height: number = imgEl.value?.naturalHeight ?? 0;
 
 	const form = new FormData();
 	form.append('file', inputEl.files[0]);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { mapInfo } from '#shared/info';
 import LogoutHeader from '../../components/logoutHeader.vue';
+import {TileMapData} from '../../../shared/info';
 
 let data: string = '';
 try {
@@ -11,7 +11,8 @@ try {
 	console.error('Fetch failed', e);
 }
 
-const maps: mapInfo[] = JSON.parse(data).maps;
+const maps: TileMapData[] = JSON.parse(data).maps;
+console.table(maps)
 </script>
 
 <template>
@@ -20,7 +21,7 @@ const maps: mapInfo[] = JSON.parse(data).maps;
 		<h1>Liste des maps</h1>
 		<ol>
 			<li v-for="(map, i) in maps" :key="i">
-				<NuxtLink :to="'/maps/' + i">{{ map.name }}</NuxtLink>
+				<NuxtLink :to="'/maps/' + i">{{ map.originalFile.name }}</NuxtLink>
 			</li>
 		</ol>
 	</div>

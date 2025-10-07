@@ -1,82 +1,91 @@
-
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { randomDirName } from '~~/server/services/generator';
+import {randomDirName} from '~~/server/services/generator';
+import {TileMapData} from '#shared/info';
 
 // Source map (large PNG/JPG/etc)
 
 // Output folder
 const tileSize = 256;
 
-export default async function generateTiles(
-    filepath: string,
-    name: string,
-    minZoom: string,
-    maxZoom: string,
-    format: string,
-    width: string,
-    height: string,
-) {
+export default async function generateTiles(data: TileMapData) {
     const config = useRuntimeConfig();
-    const dirName = `${name}-` + randomDirName(6);
 
-    const outDir = `${config.public.mapsDir}` + dirName;
-
-    fs.mkdir(outDir, { recursive: true }, (err) => {
-        if (err) throw err;
-    });
-
-    const min = parseInt(minZoom);
-    const max = parseInt(maxZoom);
-    const originalWidth = parseInt(width);
-    const originalHeight = parseInt(height);
-
-    // Calculate the size at max zoom based on larger dimension
-    const maxDimension = Math.max(originalWidth, originalHeight);
-    const maxScale = Math.pow(2, max);
-    const tilesAtMaxZoom = maxScale; // number of tiles along the larger axis
-    const maxZoomSize = tilesAtMaxZoom * tileSize;
-
-    // Calculate aspect-correct dimensions at max zoom
-    const aspectRatio = originalWidth / originalHeight;
-    let maxZoomWidth, maxZoomHeight;
-
-    if (originalWidth >= originalHeight) {
-        maxZoomWidth = maxZoomSize;
-        maxZoomHeight = Math.round(maxZoomSize / aspectRatio);
-    } else {
-        maxZoomHeight = maxZoomSize;
-        maxZoomWidth = Math.round(maxZoomSize * aspectRatio);
+    // Validate input
+    if (!data.originalFile.location || !fs.existsSync(data.originalFile.location)) {
+        throw new Error(`Input file not found: ${data.originalFile.location}`);
     }
 
-    const zoomLevels = Array.from({ length: max + 1 }, (_, i) => i);
+    if (data.originalFile.width <= 0 || data.originalFile.height <= 0) {
+        throw new Error(`Invalid dimensions: ${data.originalFile.width}x${data.originalFile.height}`);
+    }
+
+    // Generate output directory name
+    const outputDirName = `${data.originalFile.name}-${randomDirName(6)}`;
+    const outDir = `${config.public.mapsDir}${outputDirName}`;
+
+    fs.mkdirSync(outDir, {recursive: true});
+
+    const min = data.config.minZoom;
+    const max = data.config.maxZoom;
+    const originalWidth = data.originalFile.width;
+    const originalHeight = data.originalFile.height;
+
+    // Calculate the required max zoom so that zoom 0 fits in a single 256×256 tile
+    const maxDimension = Math.max(originalWidth, originalHeight);
+    const requiredMaxZoom = Math.ceil(Math.log2(maxDimension / tileSize));
+
+    // Use the larger of user-specified max or required max
+    const actualMaxZoom = Math.max(max, requiredMaxZoom);
+
+    if (actualMaxZoom > max) {
+        console.warn(`Max zoom adjusted from ${max} to ${actualMaxZoom} to fit image in tile pyramid`);
+    }
+
+    // At actualMaxZoom, calculate dimensions that align with tile boundaries
+    const maxScale = Math.pow(2, actualMaxZoom);
+    const zoom0Scale = tileSize; // At zoom 0, largest dimension = 256px
+
+    // Scale original dimensions so the larger dimension at zoom 0 = 256px
+    const scaleFactor = zoom0Scale / maxDimension;
+    const zoom0Width = Math.ceil(originalWidth * scaleFactor);
+    const zoom0Height = Math.ceil(originalHeight * scaleFactor);
+
+    // Max zoom dimensions are zoom 0 dimensions × 2^actualMaxZoom
+    const maxZoomWidth = zoom0Width * maxScale;
+    const maxZoomHeight = zoom0Height * maxScale;
+
+    // Precompute integer zoom levels
+    const zoomLevels = Array.from({length: actualMaxZoom + 1}, (_, i) => i);
 
     for (const z of zoomLevels) {
         const scale = Math.pow(2, z);
         const zoomRatio = scale / maxScale;
 
-        // Scale dimensions proportionally for this zoom level
+        // Derive dimensions for this zoom level from the original size
         const scaledWidth = Math.ceil(maxZoomWidth * zoomRatio);
         const scaledHeight = Math.ceil(maxZoomHeight * zoomRatio);
 
-        // For square tile pyramid: tiles per side = 2^z
-        const tilesPerSide = scale;
+        // Calculate tiles needed to cover the actual image dimensions
+        const tilesX = Math.ceil(scaledWidth / tileSize);
+        const tilesY = Math.ceil(scaledHeight / tileSize);
 
-        console.log(`Zoom ${z}: ${scaledWidth}x${scaledHeight} in ${tilesPerSide}x${tilesPerSide} grid`);
+        console.log(`Zoom ${z}: ${scaledWidth}x${scaledHeight} in ${tilesX}x${tilesY} grid`);
 
-        // Resize image to match zoom level
-        const buffer = await sharp(filepath)
+        // Read from the ORIGINAL uploaded file location
+        const buffer = await sharp(data.originalFile.location)
             .resize(scaledWidth, scaledHeight, {
                 fit: 'fill',
             })
             .toBuffer();
 
+
         // Generate all tiles in the square grid (even empty ones)
-        for (let x = 0; x < tilesPerSide; x++) {
-            for (let y = 0; y < tilesPerSide; y++) {
+        for (let x = 0; x < scale; x++) {
+            for (let y = 0; y < scale; y++) {
                 const tileFolder = path.join(outDir, `${z}`, `${x}`);
-                fs.mkdirSync(tileFolder, { recursive: true });
+                fs.mkdirSync(tileFolder, {recursive: true});
 
                 const tileLeft = x * tileSize;
                 const tileTop = y * tileSize;
@@ -99,29 +108,35 @@ export default async function generateTiles(
                         })
                         .toBuffer();
 
-                    // Extend to 256x256 with transparent background if needed
+                    // Extend to 256x256 with a transparent background if needed
                     await sharp(extractedTile)
                         .extend({
                             top: 0,
                             left: 0,
                             bottom: tileSize - extractHeight,
                             right: tileSize - extractWidth,
-                            background: { r: 0, g: 0, b: 0, alpha: 0 },
+                            background: {r: 0, g: 0, b: 0, alpha: 0},
                         })
-                        .toFile(path.join(tileFolder, `${y}.${format}`));
+                        .toFile(path.join(tileFolder, `${y}.${data.config.format}`));
                 } else {
-                    // Create empty transparent tile for areas outside the image
+                    // Create an empty transparent tile for areas outside the image
                     await sharp({
                         create: {
                             width: tileSize,
                             height: tileSize,
                             channels: 4,
-                            background: { r: 0, g: 0, b: 0, alpha: 0 },
+                            background: {r: 0, g: 0, b: 0, alpha: 0},
                         },
-                    }).toFile(path.join(tileFolder, `${y}.${format}`));
+                    }).toFile(path.join(tileFolder, `${y}.${data.config.format}`));
                 }
             }
         }
     }
-    return dirName;
+    data.outTileMap = {
+        location: outputDirName, // Store relative path for metadata.json
+        maxZoomWidth: maxZoomWidth,
+        maxZoomHeight: maxZoomHeight,
+        actualMaxZoom: actualMaxZoom
+    };
+    return data;
 }
