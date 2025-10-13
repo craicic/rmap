@@ -25,4 +25,8 @@ logs
 
 # Secret files
 public/map.png
-public/map/
+public/map/*
+public/maps/*
+
+public/imported/
+storage/*
