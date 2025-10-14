@@ -10,7 +10,7 @@ async function logout() {
 <template>
 	<div>
 		<div class="link">
-			<NuxtLink to="/">Retourner à l'index</NuxtLink>
+			<UButton to="/">Retourner à l'index</UButton>
 		</div>
 		<button id="logout" @click="logout">Se déconnecter</button>
 	</div>

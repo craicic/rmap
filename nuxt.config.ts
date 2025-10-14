@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
 	devtools: { enabled: true },
-	modules: ['@nuxt/eslint', '@nuxt/test-utils', 'nuxt-auth-utils'],
+	modules: ['@nuxt/eslint', '@nuxt/test-utils', 'nuxt-auth-utils', '@nuxt/ui'],
 	runtimeConfig: {
 		public: {
 			minicondaDir: process.env.MINICONDA_DIR,
