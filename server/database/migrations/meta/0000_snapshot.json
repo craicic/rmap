@@ -4,261 +4,50 @@
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.marker": {
-      "name": "marker",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "description": {
-          "name": "description",
-          "type": "varchar(2048)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "x": {
-          "name": "x",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "y": {
-          "name": "y",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "is_shown": {
-          "name": "is_shown",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "id_map": {
-          "name": "id_map",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "marker_id_map_foreign": {
-          "name": "marker_id_map_foreign",
-          "tableFrom": "marker",
-          "tableTo": "map",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "id_map"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.map": {
-      "name": "map",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "id_room": {
-          "name": "id_room",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "max_zoom": {
-          "name": "max_zoom",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "min_zoom": {
-          "name": "min_zoom",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "map_id_room_foreign": {
-          "name": "map_id_room_foreign",
-          "tableFrom": "map",
-          "tableTo": "room",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "id_room"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.image": {
-      "name": "image",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "path": {
-          "name": "path",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
     "public.room": {
       "name": "room",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "bigint",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
         "name": {
           "name": "name",
           "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
         "url": {
           "name": "url",
-          "type": "varchar(255)",
+          "type": "varchar(1000)",
           "primaryKey": false,
           "notNull": false
         },
-        "id_owner": {
-          "name": "id_owner",
-          "type": "bigint",
+        "fk_owner": {
+          "name": "fk_owner",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "room_id_owner_foreign": {
-          "name": "room_id_owner_foreign",
+        "r_fk_owner": {
+          "name": "r_fk_owner",
           "tableFrom": "room",
           "tableTo": "users",
           "schemaTo": "public",
           "columnsFrom": [
-            "id_owner"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.layer": {
-      "name": "layer",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "z_index": {
-          "name": "z_index",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_shown": {
-          "name": "is_shown",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id_map": {
-          "name": "id_map",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "layer_id_map_foreign": {
-          "name": "layer_id_map_foreign",
-          "tableFrom": "layer",
-          "tableTo": "map",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "id_map"
+            "fk_owner"
           ],
           "columnsTo": [
             "id"
@@ -279,7 +68,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "bigint",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
@@ -299,6 +88,209 @@
           "name": "email",
           "type": "varchar(255)",
           "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.map": {
+      "name": "map",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "min_zoom": {
+          "name": "min_zoom",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_zoom": {
+          "name": "max_zoom",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "width_at_max_zoom": {
+          "name": "width_at_max_zoom",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "height_at_max_zoom": {
+          "name": "height_at_max_zoom",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extension": {
+          "name": "extension",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fk_room": {
+          "name": "fk_room",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fk_file": {
+          "name": "fk_file",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "m_fk_room": {
+          "name": "m_fk_room",
+          "tableFrom": "map",
+          "tableTo": "room",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "fk_room"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "m_fk_file": {
+          "name": "m_fk_file",
+          "tableFrom": "map",
+          "tableTo": "image",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "fk_file"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.layer": {
+      "name": "layer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "z_index": {
+          "name": "z_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_shown": {
+          "name": "is_shown",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fk_map": {
+          "name": "fk_map",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "l_fk_map": {
+          "name": "l_fk_map",
+          "tableFrom": "layer",
+          "tableTo": "map",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "fk_map"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.image": {
+      "name": "image",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "width": {
+          "name": "width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "height": {
+          "name": "height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extension": {
+          "name": "extension",
+          "type": "varchar(255)",
+          "primaryKey": false,
           "notNull": false
         }
       },
@@ -310,32 +302,68 @@
       "policies": {},
       "isRLSEnabled": false
     },
-    "public.room_users": {
-      "name": "room_users",
+    "public.marker": {
+      "name": "marker",
       "schema": "",
       "columns": {
-        "id_room": {
-          "name": "id_room",
-          "type": "bigint",
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x": {
+          "name": "x",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "id_player": {
-          "name": "id_player",
-          "type": "bigint",
+        "y": {
+          "name": "y",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "is_shown": {
+          "name": "is_shown",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fk_map": {
+          "name": "fk_map",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fk_image": {
+          "name": "fk_image",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "room_users_id_room_foreign": {
-          "name": "room_users_id_room_foreign",
-          "tableFrom": "room_users",
-          "tableTo": "room",
+        "m_fk_map": {
+          "name": "m_fk_map",
+          "tableFrom": "marker",
+          "tableTo": "map",
           "schemaTo": "public",
           "columnsFrom": [
-            "id_room"
+            "fk_map"
           ],
           "columnsTo": [
             "id"
@@ -343,13 +371,73 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "room_users_id_player_foreign": {
-          "name": "room_users_id_player_foreign",
+        "m_fk_image": {
+          "name": "m_fk_image",
+          "tableFrom": "marker",
+          "tableTo": "image",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "fk_image"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.room_users": {
+      "name": "room_users",
+      "schema": "",
+      "columns": {
+        "fk_room": {
+          "name": "fk_room",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fk_player": {
+          "name": "fk_player",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "character_name": {
+          "name": "character_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ru_fk_room": {
+          "name": "ru_fk_room",
+          "tableFrom": "room_users",
+          "tableTo": "room",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "fk_room"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ru_fk_player": {
+          "name": "ru_fk_player",
           "tableFrom": "room_users",
           "tableTo": "users",
           "schemaTo": "public",
           "columnsFrom": [
-            "id_player"
+            "fk_player"
           ],
           "columnsTo": [
             "id"
@@ -362,70 +450,8 @@
         "room_users_pkey": {
           "name": "room_users_pkey",
           "columns": [
-            "id_room",
-            "id_player"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.marker_images": {
-      "name": "marker_images",
-      "schema": "",
-      "columns": {
-        "id_marker": {
-          "name": "id_marker",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id_image": {
-          "name": "id_image",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "image_id_foreign": {
-          "name": "image_id_foreign",
-          "tableFrom": "marker_images",
-          "tableTo": "image",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "id_image"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "marker_id_foreign": {
-          "name": "marker_id_foreign",
-          "tableFrom": "marker_images",
-          "tableTo": "image",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "id_marker"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "marker_images_pkey": {
-          "name": "marker_images_pkey",
-          "columns": [
-            "id_marker",
-            "id_image"
+            "fk_room",
+            "fk_player"
           ]
         }
       },

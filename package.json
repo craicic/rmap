@@ -13,11 +13,14 @@
 	},
 	"dependencies": {
 		"@nuxt/eslint": "^1.9.0",
+		"dotenv": "^17.2.3",
+		"drizzle-orm": "^0.44.6",
 		"eslint": "^9.35.0",
 		"leaflet": "^1.9.4",
 		"leaflet-rastercoords": "^1.0.6",
 		"nuxt": "^4.1.1",
 		"nuxt-auth-utils": "^0.5.24",
+		"pg": "^8.16.3",
 		"prettier": "^3.6.2",
 		"sharp": "^0.34.4",
 		"vue": "^3.5.21",
@@ -27,10 +30,13 @@
 	"devDependencies": {
 		"@nuxt/test-utils": "^3.19.2",
 		"@types/leaflet": "^1.9.20",
+		"@types/pg": "^8.15.5",
 		"@vue/test-utils": "^2.4.6",
+		"drizzle-kit": "^0.31.5",
 		"happy-dom": "^18.0.1",
 		"playwright-core": "^1.55.1",
 		"ts-node": "^10.9.2",
+		"tsx": "^4.20.6",
 		"vitest": "^3.2.4"
 	}
 }

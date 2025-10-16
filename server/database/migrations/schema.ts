@@ -1,32 +1,49 @@
-import { pgTable, foreignKey, integer, varchar, boolean, text, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, integer, varchar, text, boolean, primaryKey } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
 
-export const map = pgTable("map", {
-	id: integer().primaryKey().notNull(),
-	title: varchar({ length: 255 }),
-	fkRoom: integer("fk_room").notNull(),
-	maxZoom: integer("max_zoom"),
-	minZoom: integer("min_zoom"),
-}, (table) => [
-	foreignKey({
-			columns: [table.fkRoom],
-			foreignColumns: [room.id],
-			name: "m_fk_room"
-		}),
-]);
-
 export const room = pgTable("room", {
 	id: integer().primaryKey().notNull(),
-	name: varchar({ length: 255 }),
-	url: varchar({ length: 255 }),
+	name: varchar({ length: 255 }).notNull(),
+	description: text(),
+	url: varchar({ length: 1000 }),
 	fkOwner: integer("fk_owner").notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.fkOwner],
 			foreignColumns: [users.id],
 			name: "r_fk_owner"
+		}),
+]);
+
+export const users = pgTable("users", {
+	id: integer().primaryKey().notNull(),
+	username: varchar({ length: 255 }).notNull(),
+	password: varchar({ length: 255 }).notNull(),
+	email: varchar({ length: 255 }).notNull(),
+});
+
+export const map = pgTable("map", {
+	id: integer().primaryKey().notNull(),
+	title: varchar({ length: 255 }).notNull(),
+	minZoom: integer("min_zoom"),
+	maxZoom: integer("max_zoom"),
+	widthAtMaxZoom: integer("width_at_max_zoom"),
+	heightAtMaxZoom: integer("height_at_max_zoom"),
+	extension: varchar({ length: 10 }),
+	fkRoom: integer("fk_room").notNull(),
+	fkFile: integer("fk_file").notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.fkRoom],
+			foreignColumns: [room.id],
+			name: "m_fk_room"
+		}),
+	foreignKey({
+			columns: [table.fkFile],
+			foreignColumns: [image.id],
+			name: "m_fk_file"
 		}),
 ]);
 
@@ -44,17 +61,13 @@ export const layer = pgTable("layer", {
 		}),
 ]);
 
-export const users = pgTable("users", {
-	id: integer().primaryKey().notNull(),
-	username: varchar({ length: 255 }).notNull(),
-	password: varchar({ length: 255 }).notNull(),
-	email: varchar({ length: 255 }),
-});
-
 export const image = pgTable("image", {
 	id: integer().primaryKey().notNull(),
-	path: varchar({ length: 1000 }).notNull(),
+	path: text(),
 	title: varchar({ length: 255 }),
+	width: integer(),
+	height: integer(),
+	extension: varchar({ length: 255 }),
 });
 
 export const marker = pgTable("marker", {
@@ -65,34 +78,24 @@ export const marker = pgTable("marker", {
 	y: integer().notNull(),
 	isShown: boolean("is_shown").notNull(),
 	fkMap: integer("fk_map").notNull(),
+	fkImage: integer("fk_image"),
 }, (table) => [
 	foreignKey({
 			columns: [table.fkMap],
 			foreignColumns: [map.id],
 			name: "m_fk_map"
 		}),
-]);
-
-export const markerImages = pgTable("marker_images", {
-	fkMarker: integer("fk_marker").notNull(),
-	fkImage: integer("fk_image").notNull(),
-}, (table) => [
 	foreignKey({
 			columns: [table.fkImage],
 			foreignColumns: [image.id],
-			name: "mi_fk_image"
+			name: "m_fk_image"
 		}),
-	foreignKey({
-			columns: [table.fkMarker],
-			foreignColumns: [image.id],
-			name: "mi_fk_marker"
-		}),
-	primaryKey({ columns: [table.fkMarker, table.fkImage], name: "marker_images_pkey"}),
 ]);
 
 export const roomUsers = pgTable("room_users", {
 	fkRoom: integer("fk_room").notNull(),
 	fkPlayer: integer("fk_player").notNull(),
+	characterName: varchar("character_name", { length: 255 }),
 }, (table) => [
 	foreignKey({
 			columns: [table.fkRoom],
