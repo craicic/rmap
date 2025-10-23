@@ -1,13 +1,12 @@
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { createUpdateSchema } from 'drizzle-zod';
 import { db } from "~~/server/database/client";
-import { room } from "~~/server/database/migrations/schema";
+import { room } from "~~/server/database/schema";
 
-const bodySchema = z.object({
-  name: z.string().min(1).optional(),
-  description: z.string().optional(),
+// Update schema: all fields optional; apply overrides where needed
+const bodySchema = createUpdateSchema(room, {
   url: z.string().url().optional(),
-  fkOwner: z.number().int().optional(),
 }).refine((data) => Object.keys(data).length > 0, { message: 'No fields to update' });
 
 export default defineEventHandler(async (event) => {

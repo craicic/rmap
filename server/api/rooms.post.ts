@@ -1,8 +1,10 @@
 import { z } from 'zod';
+import { createInsertSchema } from 'drizzle-zod';
 import { db } from "~~/server/database/client";
-import { room } from "~~/server/database/migrations/schema";
+import { room } from "~~/server/database/schema";
 
-const bodySchema = z.object({
+const bodySchema = createInsertSchema(room, {
+  id: z.number().int().optional(),
   name: z.string().min(1),
   description: z.string().optional(),
   url: z.string().url().optional(),

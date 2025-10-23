@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from "~~/server/database/client";
-import { users } from "~~/server/database/migrations/schema";
+import { users } from "~~/server/database/schema";
 
 const bodySchema = z.object({
   username: z.string().min(1).optional(),

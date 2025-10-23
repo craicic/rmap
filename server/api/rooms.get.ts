@@ -1,7 +1,6 @@
-import { db } from "~~/server/database/client";
-import { room } from "~~/server/database/migrations/schema";
+import {db} from "~~/server/database/client";
+import {room} from "~~/server/database/schema";
 
 export default defineEventHandler(async () => {
-  const list = await db.select().from(room);
-  return list;
+    return db.select().from(room);
 });

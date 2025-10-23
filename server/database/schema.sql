@@ -1,9 +1,14 @@
--- CREATE DATABASE "rmap-dev";
--- CREATE SCHEMA "public";
+CREATE SEQUENCE map_id_seq;
+CREATE SEQUENCE users_id_seq;
+CREATE SEQUENCE layer_id_seq;
+CREATE SEQUENCE marker_id_seq;
+CREATE SEQUENCE image_id_seq;
+CREATE SEQUENCE room_id_seq;
+
 
 CREATE TABLE "map"
 (
-    "id"                 INTEGER      NOT NULL,
+    "id"                 INTEGER      NOT NULL DEFAULT nextval('map_id_seq'),
     "title"              VARCHAR(255) NOT NULL,
     "min_zoom"           INTEGER,
     "max_zoom"           INTEGER,
@@ -17,7 +22,7 @@ CREATE TABLE "map"
 
 CREATE TABLE "users"
 (
-    "id"       INTEGER      NOT NULL,
+    "id"       INTEGER      NOT NULL DEFAULT nextval('users_id_seq'),
     "username" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "email"    VARCHAR(255) NOT NULL,
@@ -34,7 +39,7 @@ CREATE TABLE "room_users"
 
 CREATE TABLE "layer"
 (
-    "id"       INTEGER NOT NULL,
+    "id"       INTEGER NOT NULL DEFAULT nextval('layer_id_seq'),
     "name"     VARCHAR(255),
     "z_index"  INTEGER,
     "is_shown" BOOLEAN NOT NULL,
@@ -44,7 +49,7 @@ CREATE TABLE "layer"
 
 CREATE TABLE "marker"
 (
-    "id"          INTEGER NOT NULL,
+    "id"          INTEGER NOT NULL DEFAULT nextval('marker_id_seq'),
     "name"        VARCHAR(255),
     "description" TEXT,
     "x"           INTEGER NOT NULL,
@@ -57,7 +62,7 @@ CREATE TABLE "marker"
 
 CREATE TABLE "image"
 (
-    "id"        INTEGER NOT NULL,
+    "id"        INTEGER NOT NULL DEFAULT nextval('image_id_seq'),
     "path"      TEXT,
     "title"     VARCHAR(255),
     "width"     INTEGER,
@@ -68,7 +73,7 @@ CREATE TABLE "image"
 
 CREATE TABLE "room"
 (
-    "id"          INTEGER      NOT NULL,
+    "id"          INTEGER      NOT NULL DEFAULT nextval('room_id_seq'),
     "name"        VARCHAR(255) NOT NULL,
     "description" TEXT,
     "url"         VARCHAR(1000),
@@ -108,3 +113,10 @@ ALTER TABLE "room"
     ADD CONSTRAINT "r_fk_owner"
         FOREIGN KEY ("fk_owner")
             REFERENCES "users" ("id");
+
+ALTER SEQUENCE map_id_seq OWNED BY "map"."id";
+ALTER SEQUENCE users_id_seq OWNED BY "users"."id";
+ALTER SEQUENCE layer_id_seq OWNED BY "layer"."id";
+ALTER SEQUENCE marker_id_seq OWNED BY "marker"."id";
+ALTER SEQUENCE image_id_seq OWNED BY "image"."id";
+ALTER SEQUENCE room_id_seq OWNED BY "room"."id";

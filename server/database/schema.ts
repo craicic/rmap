@@ -1,10 +1,10 @@
-import { pgTable, foreignKey, integer, varchar, text, boolean, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, integer, varchar, text, boolean, primaryKey, serial } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
 
 export const room = pgTable("room", {
-	id: integer().primaryKey().notNull(),
+	id: serial().primaryKey().notNull(),
 	name: varchar({ length: 255 }).notNull(),
 	description: text(),
 	url: varchar({ length: 1000 }),
@@ -18,14 +18,14 @@ export const room = pgTable("room", {
 ]);
 
 export const users = pgTable("users", {
-	id: integer().primaryKey().notNull(),
+	id: serial().primaryKey().notNull(),
 	username: varchar({ length: 255 }).notNull(),
 	password: varchar({ length: 255 }).notNull(),
 	email: varchar({ length: 255 }).notNull(),
 });
 
 export const map = pgTable("map", {
-	id: integer().primaryKey().notNull(),
+	id: serial().primaryKey().notNull(),
 	title: varchar({ length: 255 }).notNull(),
 	minZoom: integer("min_zoom"),
 	maxZoom: integer("max_zoom"),
@@ -48,7 +48,7 @@ export const map = pgTable("map", {
 ]);
 
 export const layer = pgTable("layer", {
-	id: integer().primaryKey().notNull(),
+	id: serial().primaryKey().notNull(),
 	name: varchar({ length: 255 }),
 	zIndex: integer("z_index"),
 	isShown: boolean("is_shown").notNull(),
@@ -62,7 +62,7 @@ export const layer = pgTable("layer", {
 ]);
 
 export const image = pgTable("image", {
-	id: integer().primaryKey().notNull(),
+	id: serial().primaryKey().notNull(),
 	path: text(),
 	title: varchar({ length: 255 }),
 	width: integer(),
@@ -71,7 +71,7 @@ export const image = pgTable("image", {
 });
 
 export const marker = pgTable("marker", {
-	id: integer().primaryKey().notNull(),
+	id: serial().primaryKey().notNull(),
 	name: varchar({ length: 255 }),
 	description: text(),
 	x: integer().notNull(),

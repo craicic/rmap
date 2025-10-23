@@ -15,6 +15,7 @@
 		"@nuxt/eslint": "^1.9.0",
 		"dotenv": "^17.2.3",
 		"drizzle-orm": "^0.44.6",
+		"drizzle-zod": "^0.8.3",
 		"eslint": "^9.35.0",
 		"leaflet": "^1.9.4",
 		"leaflet-rastercoords": "^1.0.6",
