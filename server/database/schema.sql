@@ -25,7 +25,7 @@ CREATE TABLE "users"
     "id"       INTEGER      NOT NULL DEFAULT nextval('users_id_seq'),
     "username" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
-    "email"    VARCHAR(255) NOT NULL,
+    "email"    VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 

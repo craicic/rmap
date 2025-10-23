@@ -21,7 +21,7 @@ export const users = pgTable("users", {
 	id: serial().primaryKey().notNull(),
 	username: varchar({ length: 255 }).notNull(),
 	password: varchar({ length: 255 }).notNull(),
-	email: varchar({ length: 255 }).notNull(),
+	email: varchar({ length: 255 }).unique().notNull(),
 });
 
 export const map = pgTable("map", {
@@ -109,3 +109,5 @@ export const roomUsers = pgTable("room_users", {
 		}),
 	primaryKey({ columns: [table.fkRoom, table.fkPlayer], name: "room_users_pkey"}),
 ]);
+
+export default users;

@@ -1,25 +1,7 @@
-import { z } from 'zod';
-
-const bodySchema = z.object({
-	email: z.email(),
-	password: z.string().min(8),
-});
+import auth from "~~/server/services/auth";
 
 export default defineEventHandler(async (event) => {
-	const { email, password } = await readValidatedBody(event, bodySchema.parse);
+    const body = await readBody(event);
 
-	if (email === 'admin@admin.me' && password === 'anyPassword') {
-		// set the user session in the cookie
-		// this server util is auto-imported by the auth-utils module
-		await setUserSession(event, {
-			user: {
-				name: 'developer !',
-			},
-		});
-		return {};
-	}
-	throw createError({
-		statusCode: 401,
-		message: 'Bad credentials',
-	});
+    await auth.attempt(event, body.email, body.password);
 });
