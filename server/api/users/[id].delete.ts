@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { db } from "~~/server/database/client";
 import { users } from "~~/server/database/schema";
 
+// what happens to the user's rooms?
 export default defineEventHandler(async (event) => {
   const idParam = getRouterParam(event, 'id');
   const id = Number(idParam);
