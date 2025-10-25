@@ -8,15 +8,16 @@ Make sure you have docker installed.
    ```bash
    cp .env.example .env
    ```
+    You may have to change the values in `.env` to match your environment.
 
 2. Build and start the services:
    ```bash
-   docker compose up -d --build
+   docker-compose up -d --build
    ```
 
 3. Check that services are running:
    ```bash
-   docker compose ps
+   docker-compose ps
    ```
 
 ## Accessing the Services
@@ -30,41 +31,39 @@ Make sure you have docker installed.
 
 Connect via command line:
 ```bash
-psql postgresql://postgres:postgres@localhost:5432/rmap
+  psql postgresql://postgres:postgres@localhost:5432/rmap
 ```
 
 ### Common Commands
 
 Stop services:
-``` bash
-docker compose down
+```bash
+  docker-compose down
 ```
 
 Stop and remove all data:
-``` bash
-docker compose down -v
+```bash
+  docker-compose down -v
 ```
 
 View logs:
-``` bash
-docker compose logs -f
+```bash
+  docker-compose logs -f
 ```
 
 Rebuild after Dockerfile changes:
-``` bash
-docker compose up -d --build
+```bash
+  docker-compose up -d --build
 ```
 
 ## Access pgAdmin:
-   Open your browser and go to:
-
 http://localhost:5050
-Login with:
-Email: admin@admin.com (or what's in your .env)
-Password: admin (or what's in your .env)
+
+**Email**: admin@admin.com (or what's in your .env as PGADMIN_DEFAULT_EMAIL)\
+**Password**: admin (or what's in your .env as PGADMIN_DEFAULT_PASSWORD)
+
 ## First Connection to PostgreSQL:
 
 After logging in, you should see "rmap-dev" server in the left sidebar under Servers.
-Click on it, and pgAdmin will ask for the PostgreSQL password:
-Password: postgres (or what's in your .env as POSTGRES_PASSWORD)
-Because SavePassword: true is set, pgAdmin will remember this password.
+Click on it, and pgAdmin will ask for the PostgreSQL password.\
+**Password**: postgres (or what's in your .env as POSTGRES_PASSWORD)
