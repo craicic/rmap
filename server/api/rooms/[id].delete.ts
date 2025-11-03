@@ -1,19 +1,19 @@
-import { eq } from 'drizzle-orm';
-import { db } from "~~/server/database/client";
-import { room } from "~~/server/database/schema";
+import {roomService} from '~~/server/services/room.service';
+import auth from '~~/server/services/auth';
 
 export default defineEventHandler(async (event) => {
-  const idParam = getRouterParam(event, 'id');
-  const id = Number(idParam);
-  if (!id || Number.isNaN(id)) {
-    throw createError({ statusCode: 400, message: 'Invalid id' });
-  }
+    const id = Number(getRouterParam(event, 'id'));
+    const user = await auth.user(event);
 
-  const [existing] = await db.select({ id: room.id }).from(room).where(eq(room.id, id));
-  if (!existing) {
-    throw createError({ statusCode: 404, message: 'Room not found' });
-  }
+    if (!user || !(await roomService.isRoomOwner(user.id, id))) {
+        throw createError({statusCode: 403, message: 'Unauthorized'});
+    }
 
-  await db.delete(room).where(eq(room.id, id));
-  return { success: true };
+
+
+    const existing = await roomService.getRoomById(id);
+    if (!existing) {
+        throw createError({statusCode: 404, message: 'Room not found'})
+    }
+    await roomService.deleteRoom(existing.id);
 });

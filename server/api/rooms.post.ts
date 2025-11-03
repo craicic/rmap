@@ -1,14 +1,14 @@
 import {z} from 'zod';
 import {createInsertSchema} from 'drizzle-zod';
-import {db} from "~~/server/database/client";
-import {room, users} from "~~/server/database/schema";
-import {eq} from "drizzle-orm";
+import {db} from '~~/server/database/client';
+import {room, users} from '~~/server/database/schema';
+import {eq} from 'drizzle-orm';
 
 const bodySchema = createInsertSchema(room, {
     id: z.number().int().optional(),
     name: z.string().min(1),
     description: z.string().optional(),
-    url: z.string().url().optional(),
+    url: z.url().optional(),
     fkOwner: z.number().int(),
 });
 
@@ -22,8 +22,8 @@ export default defineEventHandler(async (event) => {
     }
 
     const [created] = await db.insert(room)
-            .values(body as any)
-            .returning();
+        .values(body as any)
+        .returning();
 
     if (!created) {
         throw createError({statusCode: 500, message: 'Failed to create room'});

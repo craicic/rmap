@@ -6,7 +6,7 @@ import { users } from "~~/server/database/schema";
 const bodySchema = z.object({
   username: z.string().min(1).optional(),
   password: z.string().min(8).optional(),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
 }).refine((data) => Object.keys(data).length > 0, { message: 'No fields to update' });
 
 export default defineEventHandler(async (event) => {

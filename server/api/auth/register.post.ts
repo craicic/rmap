@@ -10,7 +10,7 @@ const bodySchema = createInsertSchema(users, {
     id: z.number().int().optional(),
     username: z.string().min(1),
     password: z.string().min(8),
-    email: z.string().email(),
+    email: z.email(),
 });
 
 export default defineEventHandler(async (event) => {

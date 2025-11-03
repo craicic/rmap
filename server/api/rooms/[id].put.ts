@@ -1,33 +1,43 @@
-import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { createUpdateSchema } from 'drizzle-zod';
-import { db } from "~~/server/database/client";
-import { room } from "~~/server/database/schema";
+import { room } from '~~/server/database/schema';
+import auth from '~~/server/services/auth';
+import { roomService } from '~~/server/services/room.service';
 
 // Update schema: all fields optional; apply overrides where needed
 const bodySchema = createUpdateSchema(room, {
-  url: z.string().url().optional(),
-}).refine((data) => Object.keys(data).length > 0, { message: 'No fields to update' });
+    url: z.url().optional(),
+    fkOwner: z.number().int(),
+}).refine((data) => Object.keys(data).length > 1, { message: 'No fields to update' });
 
 export default defineEventHandler(async (event) => {
-  const idParam = getRouterParam(event, 'id');
-  const id = Number(idParam);
-  if (!id || Number.isNaN(id)) {
-    throw createError({ statusCode: 400, message: 'Invalid id' });
-  }
+    const idParam = getRouterParam(event, 'id');
+    const id = Number(idParam);
 
-  const patch = await readValidatedBody(event, bodySchema.parse);
+    if (!id || Number.isNaN(id)) {
+        throw createError({ statusCode: 400, message: 'Invalid id' });
+    }
 
-  // Ensure exists
-  const [existing] = await db.select({ id: room.id }).from(room).where(eq(room.id, id));
-  if (!existing) {
-    throw createError({ statusCode: 404, message: 'Room not found' });
-  }
+    const patch = await readValidatedBody(event, bodySchema.parse);
 
-  await db.update(room)
-    .set(patch as any)
-    .where(eq(room.id, id));
+    // Ensure room exists
+    const existing = await roomService.getRoomById(id);
+    if (!existing) {
+        throw createError({ statusCode: 404, message: 'Room not found' });
+    }
 
-  const [updated] = await db.select().from(room).where(eq(room.id, id));
-  return updated;
+    // Verify fkOwner exists
+    const owner = await roomService.verifyOwnerExists(patch.fkOwner);
+    if (!owner) {
+        throw createError({ statusCode: 400, message: 'Invalid fkOwner' });
+    }
+
+    // Ensure the user is the owner
+    const user = await auth.user(event);
+    if (!user || user.id !== owner.id) {
+        throw createError({ statusCode: 403, message: 'Unauthorized' });
+    }
+
+    const updated = await roomService.updateRoom(id, patch as any);
+    return updated;
 });
