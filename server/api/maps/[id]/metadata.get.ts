@@ -1,5 +1,5 @@
 import fs from 'fs';
-import type {TileMapData} from '#shared/info';
+import type { TileMapData } from '#shared/info';
 
 export default defineEventHandler((event) => {
 	const idParam = getRouterParam(event, 'id');

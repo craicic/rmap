@@ -5,12 +5,15 @@ Make sure you have docker installed.
 ## Database Setup
 
 1. Copy the environment variables template:
+
    ```bash
    cp .env.example .env
    ```
-    You may have to change the values in `.env` to match your environment.
+
+   You may have to change the values in `.env` to match your environment.
 
 2. Build and start the services:
+
    ```bash
    docker-compose up -d --build
    ```
@@ -23,6 +26,7 @@ Make sure you have docker installed.
 ## Accessing the Services
 
 ### PostgreSQL Database
+
 - **Host**: `localhost`
 - **Port**: `5432` (or value in `.env`)
 - **Database**: `rmap` (or value in `.env`)
@@ -30,6 +34,7 @@ Make sure you have docker installed.
 - **Password**: `postgres` (or value in `.env`)
 
 Connect via command line:
+
 ```bash
   psql postgresql://postgres:postgres@localhost:5432/rmap
 ```
@@ -37,26 +42,31 @@ Connect via command line:
 ### Common Commands
 
 Stop services:
+
 ```bash
   docker-compose down
 ```
 
 Stop and remove all data:
+
 ```bash
   docker-compose down -v
 ```
 
 View logs:
+
 ```bash
   docker-compose logs -f
 ```
 
 Rebuild after Dockerfile changes:
+
 ```bash
   docker-compose up -d --build
 ```
 
 ## Access pgAdmin:
+
 http://localhost:5050
 
 **Email**: admin@admin.com (or what's in your .env as PGADMIN_DEFAULT_EMAIL)\

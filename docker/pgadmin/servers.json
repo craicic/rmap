@@ -1,14 +1,14 @@
 {
-  "Servers": {
-    "rmap-docker-local": {
-      "Name": "rmap Local Development",
-      "Group": "Docker",
-      "Host": "postgres",
-      "Port": 5432,
-      "MaintenanceDB": "postgres",
-      "Username": "postgres",
-      "SSLMode": "prefer",
-      "SavePassword": true
-    }
-  }
+	"Servers": {
+		"rmap-docker-local": {
+			"Name": "rmap Local Development",
+			"Group": "Docker",
+			"Host": "postgres",
+			"Port": 5432,
+			"MaintenanceDB": "postgres",
+			"Username": "postgres",
+			"SSLMode": "prefer",
+			"SavePassword": true
+		}
+	}
 }

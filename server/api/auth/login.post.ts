@@ -1,7 +1,7 @@
-import auth from "~~/server/services/auth";
+import auth from '~~/server/services/auth';
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+	const body = await readBody(event);
 
-    await auth.attempt(event, body.email, body.password);
+	await auth.attempt(event, body.email, body.password);
 });
