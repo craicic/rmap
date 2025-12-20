@@ -6,22 +6,22 @@ Make sure you have docker installed.
 
 1. Copy the environment variables template:
 
-   ```bash
-   cp .env.example .env
-   ```
+    ```bash
+    cp .env.example .env
+    ```
 
-   You may have to change the values in `.env` to match your environment.
+    You may have to change the values in `.env` to match your environment.
 
 2. Build and start the services:
 
-   ```bash
-   docker-compose up -d --build
-   ```
+    ```bash
+    docker-compose up -d --build
+    ```
 
 3. Check that services are running:
-   ```bash
-   docker-compose ps
-   ```
+    ```bash
+    docker-compose ps
+    ```
 
 ## Accessing the Services
 

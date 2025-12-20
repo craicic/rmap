@@ -4,8 +4,8 @@ import navigation from '~/components/navigation.vue';
 </script>
 
 <template>
-	<UApp>
-		<navigation />
-		<NuxtPage />
-	</UApp>
+    <UApp>
+        <navigation />
+        <NuxtPage />
+    </UApp>
 </template>

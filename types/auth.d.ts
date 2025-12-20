@@ -3,25 +3,25 @@
 // others through the package name 'nuxt-auth-utils'. We augment both to be safe.
 
 declare module '#auth-utils' {
-	export interface User {
-		id: number;
-		name?: string;
-		email?: string;
-	}
-	export interface UserSession {
-		user?: User;
-	}
+    export interface User {
+        id: number;
+        name?: string;
+        email?: string;
+    }
+    export interface UserSession {
+        user?: User;
+    }
 }
 
 declare module 'nuxt-auth-utils' {
-	export interface User {
-		id: number;
-		name?: string;
-		email?: string;
-	}
-	export interface UserSession {
-		user?: User;
-	}
+    export interface User {
+        id: number;
+        name?: string;
+        email?: string;
+    }
+    export interface UserSession {
+        user?: User;
+    }
 }
 
 export {};

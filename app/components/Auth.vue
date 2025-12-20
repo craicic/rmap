@@ -1,9 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
-	middleware: ['authenticated'],
+    middleware: ['authenticated'],
 });
 </script>
 
 <template>
-	<slot />
+    <slot />
 </template>
