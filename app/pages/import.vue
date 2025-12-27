@@ -43,11 +43,11 @@ const submit = async (event) => {
     form.append('width', width.toString());
     form.append('height', height.toString());
     try {
-        let response: { id: number } = await $fetch('/api/upload', {
+        const response: { id: number } = await $fetch('/api/upload', {
             method: 'POST',
             body: form,
         });
-        if (response.id !== null) navigateTo('/maps/' + response.id);
+        navigateTo('/maps/' + response.id);
     } catch (e) {
         errorContainer.value!.innerText = `Échec de l\'importation ${e?.message || e}`;
     }
@@ -102,7 +102,7 @@ const validate = (state: any): FormError[] => {
                     >
                         <span class="uppercase">Submit</span>
                     </UButton>
-                    <p :ref="errorContainer" class="text-red-600"></p>
+                    <p ref="errorContainer" class="text-red-600"></p>
                 </div>
             </UForm>
         </UContainer>
