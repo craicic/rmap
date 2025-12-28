@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import LogoutHeader from '../../components/logoutHeader.vue';
-import { TileMapData } from '../../../shared/info';
+import type { TileMapData } from '#shared/info';
 
 let data: string = '';
 try {

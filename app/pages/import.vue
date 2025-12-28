@@ -6,20 +6,17 @@ import { navigateTo } from 'nuxt/app';
 const errorContainer = ref<HTMLElement>();
 
 const loading = ref(false);
-const state = reactive({
-    file: undefined,
-    name: undefined,
-    format: undefined,
-    zoom: 4,
-});
+
+const file = ref();
+const name = ref();
+const format = ref();
+const zoom = ref(4);
 
 const imgEl = ref<HTMLImageElement | null>(null);
-const format = ref<string | null>(null);
-const name = ref<string | null>(null);
 const formats = ref(['webp', 'png', 'avif']);
 
-const getImageDimensions = (file) => {
-    return new Promise<{width: number, height: number}>((resolve) => {
+const getImageDimensions = (f: File) => {
+    return new Promise<{ width: number; height: number }>((resolve) => {
         const img = new Image();
         img.onload = () => {
             resolve({
@@ -27,19 +24,19 @@ const getImageDimensions = (file) => {
                 height: img.naturalHeight,
             });
         };
-        img.src = URL.createObjectURL(file);
+        img.src = URL.createObjectURL(file.value);
     });
 };
 
-const submit = async (event) => {
+const submit = async (event: any) => {
     loading.value = true;
-    const { width, height } = await getImageDimensions(state.file);
+    const { width, height } = await getImageDimensions(file.value);
     const form = new FormData();
-    form.append('file', state.file);
-    form.append('name', state.name);
+    form.append('file', file.value);
+    form.append('name', name.value);
     form.append('minZoom', '0');
-    form.append('maxZoom', state.zoom.toString());
-    form.append('format', state.format);
+    form.append('maxZoom', zoom.value.toString());
+    form.append('format', format.value);
     form.append('width', width.toString());
     form.append('height', height.toString());
     try {
@@ -49,7 +46,7 @@ const submit = async (event) => {
         });
         navigateTo('/maps/' + response.id);
     } catch (e) {
-        errorContainer.value!.innerText = `Échec de l\'importation ${e?.message || e}`;
+        errorContainer.value!.innerText = `Échec de l\'importation ${e}`;
     }
     loading.value = false;
 };
@@ -65,10 +62,10 @@ const validate = (state: any): FormError[] => {
     <UMain class="grid place-items-center">
         <UContainer class="flex flex-col items-center gap-4">
             <h1 class="text-2xl font-bold">Importer une carte</h1>
-            <UForm :state="state" @submit="submit" :validate="validate">
+            <UForm @submit="submit" :validate="validate">
                 <UFormField name="file" class="mb-4">
                     <UFileUpload
-                        v-model="state.file"
+                        v-model="file"
                         class="w-full min-h-[300px]"
                         accept="image/jpeg, image/png, image/webp, image/avif"
                         label="Déposer votre image ici ou cliquer pour sélectionner"
@@ -77,29 +74,19 @@ const validate = (state: any): FormError[] => {
                 <div class="">
                     <UInput
                         required
-                        v-model="state.name"
+                        v-model="name"
                         type="text"
                         pattern="[a-zA-Z0-9]+"
                         placeholder="Nom"
                         class="mr-4"
                     />
-                    <USelect
-                        required
-                        v-model="state.format"
-                        :items="formats"
-                        placeholder="format"
-                    />
-                    <UFormField :label="`Zoom ${state.zoom}`" class="mt-4">
-                        <USlider v-model="state.zoom" :min="0" :max="8" />
+                    <USelect required v-model="format" :items="formats" placeholder="format" />
+                    <UFormField :label="`Zoom ${zoom}`" class="mt-4">
+                        <USlider v-model="zoom" :min="0" :max="8" />
                     </UFormField>
                     <USeparator class="mt-6 mb-4" />
 
-                    <UButton
-                        :loading
-                        type="submit"
-                        size="xl"
-                        :disabled="!state.file || !state.name || !state.format"
-                    >
+                    <UButton :loading type="submit" size="xl" :disabled="!file || !name || !format">
                         <span class="uppercase">Submit</span>
                     </UButton>
                     <p ref="errorContainer" class="text-red-600"></p>

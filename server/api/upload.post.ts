@@ -3,7 +3,7 @@ import os from 'os';
 import path from 'path';
 import { env } from 'process';
 import generateTiles from '../services/tiles-sharp';
-import { TileMapData } from '#shared/info';
+import type { TileMapData } from '#shared/info';
 import sharp from 'sharp';
 
 export default defineEventHandler(async (event) => {

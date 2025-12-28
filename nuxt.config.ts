@@ -9,4 +9,9 @@ export default defineNuxtConfig({
             mapsDir: process.env.MAPS_DIR,
         },
     },
+    typescript: {
+        tsConfig: {
+            include: ['../types/**/*.d.ts'], // Explicitly include your custom types
+        },
+    },
 });

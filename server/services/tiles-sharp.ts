@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import { randomDirName } from '~~/server/services/generator';
-import { TileMapData } from '#shared/info';
+import type { TileMapData } from '#shared/info';
 
 // Source map (large PNG/JPG/etc)
 

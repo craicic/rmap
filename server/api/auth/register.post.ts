@@ -24,5 +24,8 @@ export default defineEventHandler(async (event) => {
 
     // log the user in as the user that was just created
     const user = (await db.select().from(users).where(eq(users.email, body.email)).limit(1))[0];
+    if (!user) {
+        throw createError({ statusCode: 500, message: 'Failed to create user' });
+    }
     await auth.login(event, user);
 });

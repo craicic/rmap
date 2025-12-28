@@ -3,8 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import { onMounted, ref } from 'vue';
 import * as L from 'leaflet';
 import RasterCoords from 'leaflet-rastercoords';
-import LogoutHeader from '../../components/logoutHeader.vue';
-import { TileMapData } from '../../../shared/info';
+import type { TileMapData } from '#shared/info';
 
 const route = useRoute();
 const id = String(route.params.id);
@@ -20,16 +19,19 @@ if (!map) {
 }
 
 const data: TileMapData = map;
-const location: string = data.outTileMap.location;
 const format: string = data.config.format;
-const maxZoom = ref<number>(data.outTileMap.actualMaxZoom);
+if (!data.outTileMap) throw new Error('Error in map data, outTileMap is undefined');
+const outTileMap = data.outTileMap;
+const location: string = outTileMap.location;
+const maxZoom = ref<number>(outTileMap.actualMaxZoom);
+
 const mapId = ref('map-' + String(route.params.id));
 let mapInstance: L.Map;
 
 onMounted(() => {
     // Use the scaled dimensions from tile generation, not original dimensions
-    const width = Number(data.outTileMap.maxZoomWidth);
-    const height = Number(data.outTileMap.maxZoomHeight);
+    const width = Number(outTileMap.maxZoomWidth);
+    const height = Number(outTileMap.maxZoomHeight);
 
     mapInstance = L.map(mapId.value, {
         crs: L.CRS.Simple,
@@ -43,7 +45,6 @@ onMounted(() => {
     mapInstance.setMaxZoom(maxZoom.value);
     console.log(maxZoom.value);
     mapInstance.setView(rc.unproject([0, 0]), 0);
-    console.log(`/maps/${location}/{z}/{x}/{y}.${format}`);
     L.tileLayer(`/maps/${location}/{z}/{x}/{y}.${format}`, {
         noWrap: true,
         maxNativeZoom:
