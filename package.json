@@ -20,7 +20,7 @@
         "eslint": "^9.35.0",
         "leaflet": "^1.9.4",
         "leaflet-rastercoords": "^1.0.6",
-        "nuxt": "^4.1.1",
+        "nuxt": "^4.2.2",
         "nuxt-auth-utils": "^0.5.24",
         "prettier": "^3.6.2",
         "sharp": "^0.34.4",
