@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue';
-import { navigateTo, useRoute } from '../../.nuxt/imports';
+import { navigateTo, useRoute } from '#app';
 
 const url = ref('');
 const loaded = ref(false);
@@ -46,16 +46,15 @@ const upload = async (name: string, min: string, max: string, outputFormat: stri
     form.append('minZoom', min);
     form.append('maxZoom', max);
     form.append('format', outputFormat);
-    form.append('width', width);
-    form.append('height', height);
+    form.append('width', width.toString());
+    form.append('height', height.toString());
 
     try {
-        let response = await $fetch('/api/upload', {
+        let id = await useFetch<number>('/api/upload', {
             method: 'POST',
             body: form,
         });
-        console.log('Navigating to /maps/' + response.id);
-        navigateTo('/maps/' + response.id);
+        navigateTo('/maps/' + id);
     } catch (e) {
         console.error('Upload failed', e);
     }

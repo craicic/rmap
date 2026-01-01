@@ -11,7 +11,12 @@ export default defineNuxtConfig({
     },
     typescript: {
         tsConfig: {
-            include: ['../types/**/*.d.ts'], // Explicitly include your custom types
+            compilerOptions: {
+                paths: {
+                    'leaflet-rastercoords': ['../types/leaflet-rastercoords.d.ts'],
+                },
+            },
+            include: ['../types/**/*.d.ts', "../app/**/*.ts", "../app/**/*.vue"],
         },
     },
 });

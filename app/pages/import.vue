@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import type { FormError } from '@nuxt/ui';
 import { navigateTo } from 'nuxt/app';
 
@@ -10,9 +10,16 @@ const loading = ref(false);
 const file = ref();
 const name = ref();
 const format = ref();
+
+const state = reactive({
+  file: new Blob,
+  name: '',
+  format: 'webp',
+  zoom: 4
+})
+
 const zoom = ref(4);
 
-const imgEl = ref<HTMLImageElement | null>(null);
 const formats = ref(['webp', 'png', 'avif']);
 
 const getImageDimensions = (f: File) => {
@@ -24,7 +31,7 @@ const getImageDimensions = (f: File) => {
                 height: img.naturalHeight,
             });
         };
-        img.src = URL.createObjectURL(file.value);
+        img.src = URL.createObjectURL(state.file);
     });
 };
 
@@ -32,19 +39,19 @@ const submit = async (event: any) => {
     loading.value = true;
     const { width, height } = await getImageDimensions(file.value);
     const form = new FormData();
-    form.append('file', file.value);
-    form.append('name', name.value);
+    form.append('file', state.file);
+    form.append('name', state.name);
     form.append('minZoom', '0');
-    form.append('maxZoom', zoom.value.toString());
-    form.append('format', format.value);
+    form.append('maxZoom', state.zoom.toString());
+    form.append('format', state.format);
     form.append('width', width.toString());
     form.append('height', height.toString());
     try {
-        const response: { id: number } = await $fetch('/api/upload', {
+        const id = await useFetch<number>('/api/upload', {
             method: 'POST',
             body: form,
         });
-        navigateTo('/maps/' + response.id);
+        navigateTo('/maps/' + id);
     } catch (e) {
         errorContainer.value!.innerText = `Échec de l\'importation ${e}`;
     }
@@ -62,11 +69,11 @@ const validate = (state: any): FormError[] => {
     <UMain class="grid place-items-center">
         <UContainer class="flex flex-col items-center gap-4">
             <h1 class="text-2xl font-bold">Importer une carte</h1>
-            <UForm @submit="submit" :validate="validate">
+            <UForm @submit="submit" :state="state" :validate="validate">
                 <UFormField name="file" class="mb-4">
                     <UFileUpload
                         v-model="file"
-                        class="w-full min-h-[300px]"
+                        class="w-full min-h-75"
                         accept="image/jpeg, image/png, image/webp, image/avif"
                         label="Déposer votre image ici ou cliquer pour sélectionner"
                     />

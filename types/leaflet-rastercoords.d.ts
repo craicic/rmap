@@ -1,3 +1,5 @@
+import * as L from 'leaflet';
+
 declare module 'leaflet-rastercoords' {
     export default class RasterCoords {
         constructor(map: L.Map, size: [number, number]);
