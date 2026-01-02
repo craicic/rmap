@@ -47,13 +47,16 @@ const submit = async (event: any) => {
     form.append('width', width.toString());
     form.append('height', height.toString());
     try {
-        const id = await useFetch<number>('/api/upload', {
+        const id = await $fetch('/api/upload', {
             method: 'POST',
             body: form,
         });
+        console.log('ok');
         navigateTo('/maps/' + id);
     } catch (e) {
         errorContainer.value!.innerText = `Échec de l\'importation ${e}`;
+        console.log('error');
+
     }
     loading.value = false;
 };
@@ -72,7 +75,7 @@ const validate = (state: any): FormError[] => {
             <UForm @submit="submit" :state="state" :validate="validate">
                 <UFormField name="file" class="mb-4">
                     <UFileUpload
-                        v-model="file"
+                        v-model="state.file"
                         class="w-full min-h-75"
                         accept="image/jpeg, image/png, image/webp, image/avif"
                         label="Déposer votre image ici ou cliquer pour sélectionner"
@@ -81,19 +84,19 @@ const validate = (state: any): FormError[] => {
                 <div class="">
                     <UInput
                         required
-                        v-model="name"
+                        v-model="state.name"
                         type="text"
                         pattern="[a-zA-Z0-9]+"
                         placeholder="Nom"
                         class="mr-4"
                     />
-                    <USelect required v-model="format" :items="formats" placeholder="format" />
-                    <UFormField :label="`Zoom ${zoom}`" class="mt-4">
-                        <USlider v-model="zoom" :min="0" :max="8" />
+                    <USelect required v-model="state.format" :items="formats" placeholder="format" />
+                    <UFormField :label="`Zoom ${state.zoom}`" class="mt-4">
+                        <USlider v-model="state.zoom" :min="0" :max="8" />
                     </UFormField>
                     <USeparator class="mt-6 mb-4" />
 
-                    <UButton :loading type="submit" size="xl" :disabled="!file || !name || !format">
+                    <UButton :loading type="submit" size="xl" :disabled="!state.file || !state.name || !state.format">
                         <span class="uppercase">Submit</span>
                     </UButton>
                     <p ref="errorContainer" class="text-red-600"></p>

@@ -138,5 +138,5 @@ export default defineEventHandler(async (event) => {
         }
     });
 
-    return { id: data.maps.length - 1 };
+    return data.maps.length - 1;
 });

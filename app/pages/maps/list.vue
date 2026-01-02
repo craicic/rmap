@@ -2,11 +2,14 @@
 import type {TileMapData} from '#shared/info';
 
 
-const data = await useFetch('/api/maps/metadata', {
+const data = await $fetch('/api/maps/metadata', {
   method: 'GET',
 });
-const maps: TileMapData[] = JSON.parse(data).maps;
 
+if (typeof data !== "string") {
+    throw createError({ statusCode: 500, statusMessage: "Error in metadata, string expected"})
+}
+const maps: TileMapData[] = JSON.parse(data).maps;
 </script>
 
 <template>
