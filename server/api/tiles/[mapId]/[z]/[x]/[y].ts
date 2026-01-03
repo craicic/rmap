@@ -1,7 +1,7 @@
-import { getQuery, getRouterParam, H3Event } from 'h3';
+import {getQuery, getRouterParam, H3Event} from 'h3';
 import fs from 'fs';
 import path from 'path';
-import { z } from 'zod';
+import {z} from 'zod';
 
 export default defineEventHandler(async (event) => {
     const req = parseTileRequest(event);
@@ -46,7 +46,7 @@ function parseTileRequest(event: H3Event): TileRequest {
     const mapIdStr = getRouterParam(event, 'mapId');
 
     if (!zStr || !xStr || !yStr || !mapIdStr) {
-        throw createError({ statusCode: 400, message: 'Missing parameters' });
+        throw createError({statusCode: 400, message: 'Missing parameters'});
     }
 
     const q = getQuery(event);
@@ -65,7 +65,7 @@ function parseTileRequest(event: H3Event): TileRequest {
         throw createError({
             statusCode: 400,
             message: 'Invalid parameters',
-            data: parsed.error.flatten(),
+            data: parsed.error,
         });
     }
 

@@ -1,13 +1,13 @@
-import { z } from 'zod';
-import { createInsertSchema } from 'drizzle-zod';
-import { db } from '~~/server/database/client';
-import { users } from '~~/server/database/schema';
+import {z} from 'zod';
+import {createInsertSchema} from 'drizzle-zod';
+import {db} from '~~/server/database/client';
+import {users} from '~~/server/database/schema';
 
 const bodySchema = createInsertSchema(users, {
     id: z.number().int().optional(),
     username: z.string().min(1),
     password: z.string().min(8),
-    email: z.string().email(),
+    email: z.string(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
         .returning();
 
     if (!created) {
-        throw createError({ statusCode: 500, message: 'Failed to create user' });
+        throw createError({statusCode: 500, message: 'Failed to create user'});
     }
     return created;
 });

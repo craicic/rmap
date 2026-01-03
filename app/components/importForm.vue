@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue';
-import { navigateTo, useRoute } from '#app';
+import {nextTick, ref} from 'vue';
+import {navigateTo} from '#app';
 
 const url = ref('');
 const loaded = ref(false);
@@ -33,8 +33,8 @@ const upload = async (name: string, min: string, max: string, outputFormat: stri
     // if the image hasn't loaded yet, wait for it
     if (imgEl.value && !imgEl.value.complete) {
         await new Promise<void>((resolve) => {
-            imgEl.value!.addEventListener('load', () => resolve(), { once: true });
-            imgEl.value!.addEventListener('error', () => resolve(), { once: true });
+            imgEl.value!.addEventListener('load', () => resolve(), {once: true});
+            imgEl.value!.addEventListener('error', () => resolve(), {once: true});
         });
     }
     const width: number = imgEl.value?.naturalWidth ?? 0;

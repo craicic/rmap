@@ -1,28 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { FormError } from '@nuxt/ui';
-import { navigateTo } from 'nuxt/app';
+import {ref} from 'vue';
+import type {FormError} from '@nuxt/ui';
+import {navigateTo} from 'nuxt/app';
 
 const errorContainer = ref<HTMLElement>();
 
 const loading = ref(false);
 
 const file = ref();
-const name = ref();
-const format = ref();
-
 const state = reactive({
-  file: new Blob,
-  name: '',
-  format: 'webp',
-  zoom: 4
-})
+    file: false,
+    name: '',
+    format: 'webp',
+    zoom: 4,
+});
 
-const zoom = ref(4);
 
 const formats = ref(['webp', 'png', 'avif']);
 
-const getImageDimensions = (f: File) => {
+const getImageDimensions = (f: Blob) => {
     return new Promise<{ width: number; height: number }>((resolve) => {
         const img = new Image();
         img.onload = () => {
@@ -31,15 +27,16 @@ const getImageDimensions = (f: File) => {
                 height: img.naturalHeight,
             });
         };
-        img.src = URL.createObjectURL(state.file);
+        img.src = URL.createObjectURL(file.value);
+
     });
 };
 
 const submit = async (event: any) => {
     loading.value = true;
-    const { width, height } = await getImageDimensions(file.value);
+    const {width, height} = await getImageDimensions(file.value);
     const form = new FormData();
-    form.append('file', state.file);
+    form.append('file', file.value);
     form.append('name', state.name);
     form.append('minZoom', '0');
     form.append('maxZoom', state.zoom.toString());
@@ -56,14 +53,13 @@ const submit = async (event: any) => {
     } catch (e) {
         errorContainer.value!.innerText = `Échec de l\'importation ${e}`;
         console.log('error');
-
     }
     loading.value = false;
 };
 
 const validate = (state: any): FormError[] => {
     const errors = [];
-    if (!state.file) errors.push({ name: 'file', message: 'Image requise' });
+    if (!file) errors.push({name: 'file', message: 'Image requise'});
     return errors;
 };
 </script>
@@ -75,7 +71,7 @@ const validate = (state: any): FormError[] => {
             <UForm @submit="submit" :state="state" :validate="validate">
                 <UFormField name="file" class="mb-4">
                     <UFileUpload
-                        v-model="state.file"
+                        v-model="file"
                         class="w-full min-h-75"
                         accept="image/jpeg, image/png, image/webp, image/avif"
                         label="Déposer votre image ici ou cliquer pour sélectionner"
@@ -90,13 +86,23 @@ const validate = (state: any): FormError[] => {
                         placeholder="Nom"
                         class="mr-4"
                     />
-                    <USelect required v-model="state.format" :items="formats" placeholder="format" />
+                    <USelect
+                        required
+                        v-model="state.format"
+                        :items="formats"
+                        placeholder="format"
+                    />
                     <UFormField :label="`Zoom ${state.zoom}`" class="mt-4">
-                        <USlider v-model="state.zoom" :min="0" :max="8" />
+                        <USlider v-model="state.zoom" :min="0" :max="8"/>
                     </UFormField>
-                    <USeparator class="mt-6 mb-4" />
+                    <USeparator class="mt-6 mb-4"/>
 
-                    <UButton :loading type="submit" size="xl" :disabled="!state.file || !state.name || !state.format">
+                    <UButton
+                        :loading
+                        type="submit"
+                        size="xl"
+                        :disabled="!file || !state.name || !state.format"
+                    >
                         <span class="uppercase">Submit</span>
                     </UButton>
                     <p ref="errorContainer" class="text-red-600"></p>
