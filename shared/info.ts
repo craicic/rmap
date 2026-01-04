@@ -1,16 +1,16 @@
 export interface mapInfo {
-	name: string;
-	minZoom: string;
-	maxZoom: string;
-	format: string;
-	width: string;
-	height: string;
+    name: string;
+    minZoom: string;
+    maxZoom: string;
+    format: string;
+    width: string;
+    height: string;
     out: {
-        location: string,
-        maxZoomWidth: number,
-        maxZoomHeight: number,
-        actualMaxZoom: number,
-    },
+        location: string;
+        maxZoomWidth: number;
+        maxZoomHeight: number;
+        actualMaxZoom: number;
+    };
 }
 
 export interface TileMapData {
@@ -20,12 +20,12 @@ export interface TileMapData {
         format: string;
         width: number;
         height: number;
-    },
+    };
     config: {
         minZoom: number;
         maxZoom: number;
         format: string;
-    },
+    };
     outTileMap?: {
         location: string;
         maxZoomWidth: number;

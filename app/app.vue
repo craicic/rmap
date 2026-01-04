@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import './main.css';
+</script>
+
 <template>
-	<NuxtPage />
+    <UApp>
+        <navigation />
+        <NuxtPage />
+    </UApp>
 </template>

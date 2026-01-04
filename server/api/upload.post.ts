@@ -3,7 +3,7 @@ import os from 'os';
 import path from 'path';
 import {env} from 'process';
 import generateTiles from '../services/tiles-sharp';
-import {TileMapData} from '#shared/info';
+import type {TileMapData} from '#shared/info';
 import sharp from 'sharp';
 
 export default defineEventHandler(async (event) => {
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
 
             filepath = path.join(tempDirPath, file.filename);
             fs.writeFileSync(filepath, file.data);
-            
+
             // Store the actual saved filepath
             metadata['uploadedFilePath'] = filepath;
 
@@ -107,7 +107,7 @@ export default defineEventHandler(async (event) => {
             minZoom: Number(metadata.minZoom) || 0,
             maxZoom: Number(metadata.maxZoom) || 4,
             format: metadata.format || 'webp',
-        }
+        },
     };
 
     let tileMapData;
@@ -125,9 +125,8 @@ export default defineEventHandler(async (event) => {
     }
 
     const data = JSON.parse(fs.readFileSync(env.MAPS_DIR + 'metadata.json', 'utf8'));
-    console.log(data)
-    if (!tileMapData)
-        return 400;
+    console.log(data);
+    if (!tileMapData) return 400;
 
     data.maps.push(tileMapData);
 
@@ -139,5 +138,5 @@ export default defineEventHandler(async (event) => {
         }
     });
 
-    return {id: data.maps.length - 1};
+    return data.maps.length - 1;
 });

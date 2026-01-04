@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import {randomDirName} from '~~/server/services/generator';
-import {TileMapData} from '#shared/info';
+import type {TileMapData} from '#shared/info';
 
 // Source map (large PNG/JPG/etc)
 
@@ -18,7 +18,9 @@ export default async function generateTiles(data: TileMapData) {
     }
 
     if (data.originalFile.width <= 0 || data.originalFile.height <= 0) {
-        throw new Error(`Invalid dimensions: ${data.originalFile.width}x${data.originalFile.height}`);
+        throw new Error(
+            `Invalid dimensions: ${data.originalFile.width}x${data.originalFile.height}`,
+        );
     }
 
     // Generate output directory name
@@ -40,15 +42,16 @@ export default async function generateTiles(data: TileMapData) {
     const actualMaxZoom = Math.max(max, requiredMaxZoom);
 
     if (actualMaxZoom > max) {
-        console.warn(`Max zoom adjusted from ${max} to ${actualMaxZoom} to fit image in tile pyramid`);
+        console.warn(
+            `Max zoom adjusted from ${max} to ${actualMaxZoom} to fit image in tile pyramid`,
+        );
     }
 
     // At actualMaxZoom, calculate dimensions that align with tile boundaries
     const maxScale = Math.pow(2, actualMaxZoom);
-    const zoom0Scale = tileSize; // At zoom 0, largest dimension = 256px
-
+    // At zoom 0, largest dimension = 256px
     // Scale original dimensions so the larger dimension at zoom 0 = 256px
-    const scaleFactor = zoom0Scale / maxDimension;
+    const scaleFactor = tileSize / maxDimension;
     const zoom0Width = Math.ceil(originalWidth * scaleFactor);
     const zoom0Height = Math.ceil(originalHeight * scaleFactor);
 
@@ -79,7 +82,6 @@ export default async function generateTiles(data: TileMapData) {
                 fit: 'fill',
             })
             .toBuffer();
-
 
         // Generate all tiles in the square grid (even empty ones)
         for (let x = 0; x < scale; x++) {
@@ -136,7 +138,7 @@ export default async function generateTiles(data: TileMapData) {
         location: outputDirName, // Store relative path for metadata.json
         maxZoomWidth: maxZoomWidth,
         maxZoomHeight: maxZoomHeight,
-        actualMaxZoom: actualMaxZoom
+        actualMaxZoom: actualMaxZoom,
     };
     return data;
 }

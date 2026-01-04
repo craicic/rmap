@@ -1,0 +1,2 @@
+CREATE DATABASE "rmap_test";
+CREATE SCHEMA IF NOT EXISTS "public";
