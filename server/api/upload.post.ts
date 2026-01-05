@@ -123,20 +123,31 @@ export default defineEventHandler(async (event) => {
             message: 'Failed to generate tiles',
         });
     }
+    let content;
+    try {
+         content = fs.readFileSync(env.MAPS_DIR + 'metadata.json', 'utf8');
+    } catch (err) {
+        console.log("Creating a new metadata.json file");
+        content = "{\"savedMaps\": []}";
+        fs.writeFileSync(env.MAPS_DIR + 'metadata.json', content);
+    }
 
-    const data = JSON.parse(fs.readFileSync(env.MAPS_DIR + 'metadata.json', 'utf8'));
-    console.log(data);
-    if (!tileMapData) return 400;
 
-    data.maps.push(tileMapData);
+    const mdata = JSON.parse(content);
 
-    fs.writeFile(config.public.mapsDir + 'metadata.json', JSON.stringify(data), (err) => {
+    if (!tileMapData) return 500;
+    if (mdata.savedMaps) {
+        console.table(mdata.savedMaps)
+        mdata.savedMaps.push(tileMapData);
+    }
+
+    fs.writeFile(config.public.mapsDir + 'mdata.json', JSON.stringify(mdata), (err) => {
         if (err) {
             console.log('Error writing file:', err);
         } else {
-            console.log('Successfully appended metadata.json file');
+            console.log('Successfully appended mdata.json file');
         }
     });
 
-    return data.maps.length - 1;
+    return mdata.savedMaps.length - 1;
 });

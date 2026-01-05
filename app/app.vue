@@ -4,7 +4,9 @@ import './main.css';
 
 <template>
     <UApp>
-        <navigation />
-        <NuxtPage />
+        <Navigation/>
+        <UMain class="grid place-items-center">
+            <NuxtPage/>
+        </UMain>
     </UApp>
 </template>

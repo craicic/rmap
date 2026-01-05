@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type {NavigationMenuItem} from '@nuxt/ui';
+
 const {clear: clearSession} = useUserSession();
 
 async function logout() {
@@ -6,24 +8,44 @@ async function logout() {
     await navigateTo('/login');
 }
 const {user} = useUserSession();
+
+const route = useRoute()
+
+const items = computed<NavigationMenuItem[]>(() => [
+    {
+        label: 'Importer une carte',
+        to: '/import',
+        active: route.path.startsWith('/import')
+    },
+    {
+        label: 'Liste des cartes',
+        to: '/maps/list',
+        active: route.path.startsWith('/maps/list')
+    },
+    {
+        label: 'Dépot Github',
+        to: 'https://github.com/craicic/rmap',
+        target: '_blank'
+    }
+]);
+
 </script>
 
 <template>
     <UHeader title="RMAP" to="/">
-        <p v-if="user">Bienvenue {{ user.name }}</p>
-
-        <ul class="inline-flex gap-4 list-none p-0 m-0">
-            <li>
-                <UButton to="/import">Importer une carte</UButton>
-            </li>
-            <li>
-                <UButton to="/maps/list">Liste des cartes</UButton>
-            </li>
-            <li>
-                <UButton id="logout" @click="logout">Se déconnecter</UButton>
-            </li>
-        </ul>
+        <UNavigationMenu :items="items" />
+        <template #right>
+            <UColorModeButton />
+            <template v-if="user">
+            <UButton
+                icon="lucide:log-out"
+                size="md"
+                color="neutral"
+                variant="outline">
+                Logout
+            </UButton>
+            </template>
+        </template>
     </UHeader>
 
-    <slot />
 </template>

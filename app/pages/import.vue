@@ -65,49 +65,47 @@ const validate = (state: any): FormError[] => {
 </script>
 
 <template>
-    <UMain class="grid place-items-center">
-        <UContainer class="flex flex-col items-center gap-4">
-            <h1 class="text-2xl font-bold">Importer une carte</h1>
-            <UForm @submit="submit" :state="state" :validate="validate">
-                <UFormField name="file" class="mb-4">
-                    <UFileUpload
-                        v-model="file"
-                        class="w-full min-h-75"
-                        accept="image/jpeg, image/png, image/webp, image/avif"
-                        label="Déposer votre image ici ou cliquer pour sélectionner"
-                    />
+    <UContainer class="flex flex-col items-center gap-4">
+        <h1 class="text-4xl font-bold">Importer une carte</h1>
+        <UForm @submit="submit" :state="state" :validate="validate">
+            <UFormField name="file" class="mb-4">
+                <UFileUpload
+                    v-model="file"
+                    class="w-full min-h-75"
+                    accept="image/jpeg, image/png, image/webp, image/avif"
+                    label="Déposer votre image ici ou cliquer pour sélectionner"
+                />
+            </UFormField>
+            <div class="">
+                <UInput
+                    required
+                    v-model="state.name"
+                    type="text"
+                    pattern="[a-zA-Z0-9]+"
+                    placeholder="Nom"
+                    class="mr-4"
+                />
+                <USelect
+                    required
+                    v-model="state.format"
+                    :items="formats"
+                    placeholder="format"
+                />
+                <UFormField :label="`Zoom ${state.zoom}`" class="mt-4">
+                    <USlider v-model="state.zoom" :min="0" :max="8"/>
                 </UFormField>
-                <div class="">
-                    <UInput
-                        required
-                        v-model="state.name"
-                        type="text"
-                        pattern="[a-zA-Z0-9]+"
-                        placeholder="Nom"
-                        class="mr-4"
-                    />
-                    <USelect
-                        required
-                        v-model="state.format"
-                        :items="formats"
-                        placeholder="format"
-                    />
-                    <UFormField :label="`Zoom ${state.zoom}`" class="mt-4">
-                        <USlider v-model="state.zoom" :min="0" :max="8"/>
-                    </UFormField>
-                    <USeparator class="mt-6 mb-4"/>
+                <USeparator class="mt-6 mb-4"/>
 
-                    <UButton
-                        :loading
-                        type="submit"
-                        size="xl"
-                        :disabled="!file || !state.name || !state.format"
-                    >
-                        <span class="uppercase">Submit</span>
-                    </UButton>
-                    <p ref="errorContainer" class="text-red-600"></p>
-                </div>
-            </UForm>
-        </UContainer>
-    </UMain>
+                <UButton
+                    :loading
+                    type="submit"
+                    size="xl"
+                    :disabled="!file || !state.name || !state.format"
+                >
+                    <span class="uppercase">Submit</span>
+                </UButton>
+                <p ref="errorContainer" class="text-red-600"></p>
+            </div>
+        </UForm>
+    </UContainer>
 </template>
