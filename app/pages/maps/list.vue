@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type {TableColumn} from '@nuxt/ui';
+import type {TableColumn, TableRow} from '@nuxt/ui';
 import type {TileMapData} from '#shared/info';
+import {navigateTo} from '#app';
 
 const route = useRoute()
 const data = await $fetch<{ savedMaps: TileMapData[] }>('/api/maps/metadata');
@@ -14,8 +15,25 @@ const columns: TableColumn<TileMapData>[] = [
     {
         header: 'Format',
         accessorKey: 'originalFile.format',
+    },
+    {
+        header: 'Input dimension (px)',
+        accessorFn: (row) => row.originalFile.width + ' * ' + row.originalFile.height
+    },
+    {
+        header: 'Output dimension (px)',
+        accessorFn: (row) => row.outTileMap?.maxZoomWidth + ' * ' + row.outTileMap?.maxZoomHeight
+    },
+    {
+        header: 'Zoom level',
+        accessorKey: 'outTileMap.actualMaxZoom'
     }
 ];
+
+function onSelect(e: Event, row: TableRow<TileMapData>): void  {
+    console.log('id='+ row.id)
+    navigateTo('/maps/' + row.id)
+}
 </script>
 
 <template>
@@ -33,7 +51,12 @@ const columns: TableColumn<TileMapData>[] = [
                         active: route.path.startsWith('/import')
              }]"/>
 
-        <UTable v-else :data="tableData" :columns="columns" class="flex-1"/>
+        <UTable
+            v-else
+            :data="tableData"
+            :columns="columns"
+            @select="onSelect"
+            class="flex-1"/>
     </UContainer>
 </template>
 

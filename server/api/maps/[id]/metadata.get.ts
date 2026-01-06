@@ -13,7 +13,7 @@ export default defineEventHandler((event) => {
 
     const config = useRuntimeConfig();
     const metadata = JSON.parse(fs.readFileSync(config.public.mapsDir + 'metadata.json', 'utf8'));
-    const entry: TileMapData = metadata.maps?.[id];
+    const entry: TileMapData = metadata.savedMaps?.[id];
     if (!entry) {
         throw createError({statusCode: 404, statusMessage: 'Map not found'});
     }

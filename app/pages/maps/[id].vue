@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css';
 import {onMounted, ref} from 'vue';
-import * as L from 'leaflet';
-import RasterCoords from 'leaflet-rastercoords';
 import type {TileMapData} from '#shared/info';
 
 const route = useRoute();
@@ -26,9 +24,13 @@ const location: string = outTileMap.location;
 const maxZoom = ref<number>(outTileMap.actualMaxZoom);
 
 const mapId = ref('map-' + String(route.params.id));
-let mapInstance: L.Map;
+let mapInstance: any;
 
-onMounted(() => {
+onMounted(async () => {
+    // Dynamically import Leaflet and plugins only on client-side
+    const L = await import('leaflet');
+    const RasterCoords = (await import('leaflet-rastercoords')).default;
+
     // Use the scaled dimensions from tile generation, not original dimensions
     const width = Number(outTileMap.maxZoomWidth);
     const height = Number(outTileMap.maxZoomHeight);
@@ -55,5 +57,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div :id="mapId" style="height: 90vh"></div>
+    <ClientOnly>
+        <div :id="mapId" style="height: 90vh;" class="w-full"></div>
+    </ClientOnly>
 </template>

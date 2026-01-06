@@ -141,7 +141,7 @@ export default defineEventHandler(async (event) => {
         mdata.savedMaps.push(tileMapData);
     }
 
-    fs.writeFile(config.public.mapsDir + 'mdata.json', JSON.stringify(mdata), (err) => {
+    fs.writeFile(config.public.mapsDir + 'metadata.json', JSON.stringify(mdata), (err) => {
         if (err) {
             console.log('Error writing file:', err);
         } else {
