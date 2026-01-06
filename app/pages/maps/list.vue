@@ -9,7 +9,11 @@ const data = await $fetch<{ savedMaps: TileMapData[] }>('/api/maps/metadata');
 const tableData = computed(() => data.savedMaps.slice() || []);
 const columns: TableColumn<TileMapData>[] = [
     {
-        header: 'Name',
+        header: 'Miniature',
+        accessorKey: 'miniature'
+    },
+    {
+        header: 'Nom',
         accessorKey: 'originalFile.name',
     },
     {
@@ -17,22 +21,25 @@ const columns: TableColumn<TileMapData>[] = [
         accessorKey: 'originalFile.format',
     },
     {
-        header: 'Input dimension (px)',
+        header: 'Dimensions d\'entrée (px)',
         accessorFn: (row) => row.originalFile.width + ' * ' + row.originalFile.height
     },
     {
-        header: 'Output dimension (px)',
+        header: 'Dimensions de sortie (px)',
         accessorFn: (row) => row.outTileMap?.maxZoomWidth + ' * ' + row.outTileMap?.maxZoomHeight
     },
     {
-        header: 'Zoom level',
+        header: 'Niveau de zoom',
         accessorKey: 'outTileMap.actualMaxZoom'
     }
 ];
 
-function onSelect(e: Event, row: TableRow<TileMapData>): void  {
-    console.log('id='+ row.id)
+function onSelect(e: Event, row: TableRow<TileMapData>): void {
     navigateTo('/maps/' + row.id)
+}
+
+function getImage(row: TableRow<TileMapData>) {
+    return `/maps/${row.original.outTileMap?.location}/0/0/0.${row.original.originalFile.format}`;
 }
 </script>
 
@@ -56,7 +63,15 @@ function onSelect(e: Event, row: TableRow<TileMapData>): void  {
             :data="tableData"
             :columns="columns"
             @select="onSelect"
-            class="flex-1"/>
+            class="flex-1">
+            <template #miniature-cell="{row}">
+                <div class="flex items-center gap-3">
+                    <UAvatar
+                        :src="getImage(row)"
+                    />
+                </div>
+            </template>
+        </UTable>
     </UContainer>
 </template>
 
