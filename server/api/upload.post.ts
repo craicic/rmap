@@ -145,7 +145,7 @@ export default defineEventHandler(async (event) => {
         if (err) {
             console.log('Error writing file:', err);
         } else {
-            console.log('Successfully appended mdata.json file');
+            console.log('Successfully appended metadata.json file');
         }
     });
 

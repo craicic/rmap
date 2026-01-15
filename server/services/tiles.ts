@@ -1,39 +1,131 @@
-import {exec} from 'child_process';
 import fs from 'fs';
-import {randomDirName} from '~~/server/services/generator';
+import path from 'path';
+import sharp from 'sharp';
+import type {TileMapData} from '#shared/info';
+import {db} from '~~/server/database/client';
+import {tile} from '~~/server/database/schema';
 
-export default function imageToTiles(
-    filepath: string,
-    name: string,
-    minZoom: string,
-    maxZoom: string,
-    format: string,
-) {
+// Source map (large PNG/JPG/etc)
+
+// Output folder
+const tileSize = 256;
+
+export default async function generateTiles(data: TileMapData) {
     const config = useRuntimeConfig();
-    const dirName = `${name}-` + randomDirName(6);
-    const outDir = `${config.public.mapsDir}` + dirName;
 
-    fs.mkdir(outDir, {recursive: true}, (err) => {
-        if (err) throw err;
-    });
+    // Validate input
+    if (!data.originalFile.location || !fs.existsSync(data.originalFile.location)) {
+        throw new Error(`Input file not found: ${data.originalFile.location}`);
+    }
 
-    const cmd = [
-        `source ${config.public.minicondaDir}etc/profile.d/conda.sh`,
-        'conda activate geospatial',
-        `gdal2tiles.py --xyz -p raster --zoom=${minZoom}-${maxZoom} --webviewer=leaflet "${filepath}" "${outDir}/" --tiledriver="${format.toUpperCase()}"`,
-    ].join(' && ');
-    // Use exec with bash -lc to load conda and run command
-    exec(cmd, {shell: '/usr/bin/bash'}, (error, stdout, stderr) => {
-        if (stdout) console.log(`stdout: ${stdout}`);
-        if (stderr) console.error(`stderr: ${stderr}`);
-        if (error) {
-            console.error('gdal2tiles failed:', error);
-            fs.rmdir(outDir, (err) => {
-                if (err) throw err;
-            });
-            throw error;
+    if (data.originalFile.width <= 256 || data.originalFile.height <= 256) {
+        throw new Error(
+            `Invalid dimensions: ${data.originalFile.width}x${data.originalFile.height}, input width and height must be > 256px`,
+        );
+    }
+    const min = data.config.minZoom;
+    const max = data.config.maxZoom;
+    const originalWidth = data.originalFile.width;
+    const originalHeight = data.originalFile.height;
+
+    // Calculate the required max zoom so that zoom 0 fits in a single 256×256 tile
+    const maxDimension = Math.max(originalWidth, originalHeight);
+    const requiredMaxZoom = Math.ceil(Math.log2(maxDimension / tileSize));
+
+    // Use the larger of user-specified max or required max
+    const actualMaxZoom = Math.max(max, requiredMaxZoom);
+
+    if (actualMaxZoom > max) {
+        console.warn(
+            `Max zoom adjusted from ${max} to ${actualMaxZoom} to fit image in tile pyramid`,
+        );
+    }
+
+    // At actualMaxZoom, calculate dimensions that align with tile boundaries
+    const maxScale = Math.pow(2, actualMaxZoom);
+    // At zoom 0, largest dimension = 256px
+    // Scale original dimensions so the larger dimension at zoom 0 = 256px
+    const scaleFactor = tileSize / maxDimension;
+    const zoom0Width = Math.ceil(originalWidth * scaleFactor);
+    const zoom0Height = Math.ceil(originalHeight * scaleFactor);
+
+    // Max zoom dimensions are zoom 0 dimensions × 2^actualMaxZoom
+    const maxZoomWidth = zoom0Width * maxScale;
+    const maxZoomHeight = zoom0Height * maxScale;
+
+    // Precompute integer zoom levels
+    const zoomLevels = Array.from({length: actualMaxZoom + 1}, (_, i) => i);
+
+    for (const z of zoomLevels) {
+        const scale = Math.pow(2, z);
+        const zoomRatio = scale / maxScale;
+
+        // Derive dimensions for this zoom level from the original size
+        const scaledWidth = Math.ceil(maxZoomWidth * zoomRatio);
+        const scaledHeight = Math.ceil(maxZoomHeight * zoomRatio);
+
+        // Calculate tiles needed to cover the actual image dimensions
+        const tilesX = Math.ceil(scaledWidth / tileSize);
+        const tilesY = Math.ceil(scaledHeight / tileSize);
+
+        console.log(`Zoom ${z}: ${scaledWidth}x${scaledHeight} in ${tilesX}x${tilesY} grid`);
+
+        // Read from the ORIGINAL uploaded file location
+        const buffer = await sharp(data.originalFile.location)
+            .resize(scaledWidth, scaledHeight, {
+                fit: 'fill',
+            })
+            .toBuffer();
+
+        // Generate all tiles in the square grid (even empty ones)
+        for (let x = 0; x < scale; x++) {
+            for (let y = 0; y < scale; y++) {
+                const tileLeft = x * tileSize;
+                const tileTop = y * tileSize;
+
+                // Check if this tile overlaps with actual image data
+                const hasImageData = tileLeft < scaledWidth && tileTop < scaledHeight;
+
+                if (hasImageData) {
+                    // Calculate actual extract dimensions (may be smaller at edges)
+                    const extractWidth = Math.min(tileSize, scaledWidth - tileLeft);
+                    const extractHeight = Math.min(tileSize, scaledHeight - tileTop);
+
+                    // Extract the tile from the buffer
+                    const extractedTile = await sharp(buffer)
+                        .extract({
+                            left: tileLeft,
+                            top: tileTop,
+                            width: extractWidth,
+                            height: extractHeight,
+                        })
+                        .toBuffer();
+
+                    // Extend to 256x256 with a transparent background if needed
+                    let bytea = await sharp(extractedTile)
+                        .extend({
+                            top: 0,
+                            left: 0,
+                            bottom: tileSize - extractHeight,
+                            right: tileSize - extractWidth,
+                            background: {r: 0, g: 0, b: 0, alpha: 0},
+                        })
+                        .toBuffer();
+                    db.insert(tile).values({z: z, x: x, y: y, bytea: bytea, fkMap: 1})
+                } else {
+                    // Create an empty transparent tile for areas outside the image
+                    let bytea = await sharp({
+                        create: {
+                            width: tileSize,
+                            height: tileSize,
+                            channels: 4,
+                            background: {r: 0, g: 0, b: 0, alpha: 0},
+                        },
+                    }).toBuffer();
+                    db.insert(tile).values({z: z, x: x, y: y, bytea: bytea, fkMap: 1})
+                }
+
+            }
         }
-        console.log('gdal2tiles completed successfully');
-    });
-    return dirName;
+    }
 }
